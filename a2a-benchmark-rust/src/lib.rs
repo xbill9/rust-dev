@@ -83,11 +83,14 @@ pub fn find_mersenne_primes(count: usize) -> Report {
     }
 }
 
-/// First positive integer in `text`, or `None`.
+/// First positive integer in `text`, or `None`. A number too large for
+/// `usize` saturates to `usize::MAX` (the run is capped by the exponent table
+/// anyway) instead of being skipped, which used to fall back to the default.
 pub fn parse_count(text: &str) -> Option<usize> {
     text.split(|c: char| !c.is_ascii_digit())
         .filter(|s| !s.is_empty())
-        .find_map(|s| s.parse::<usize>().ok().filter(|&n| n > 0))
+        .map(|s| s.parse::<usize>().unwrap_or(usize::MAX))
+        .find(|&n| n > 0)
 }
 
 #[cfg(test)]
@@ -126,5 +129,49 @@ mod tests {
         );
         assert_eq!(parse_count("0 then 7"), Some(7));
         assert_eq!(parse_count("no digits"), None);
+        assert_eq!(parse_count("000 then 3"), Some(3));
+    }
+
+    #[test]
+    fn oversized_count_saturates() {
+        assert_eq!(
+            parse_count("first 99999999999999999999999"),
+            Some(usize::MAX)
+        );
+    }
+
+    /// Exhaustive check through N=22 (exponent 9941): Lucas-Lehmer must
+    /// accept exactly the first 22 table entries among *all* primes p <= 9941.
+    /// Slow (tens of seconds): cargo test --release -- --ignored
+    #[test]
+    #[ignore]
+    fn exhaustive_through_n22() {
+        let limit = EXPONENTS[21];
+        let sieve = {
+            let mut is = vec![true; (limit + 1) as usize];
+            is[0] = false;
+            is[1] = false;
+            let mut i = 2;
+            while i * i <= limit as usize {
+                if is[i] {
+                    (i * i..=limit as usize)
+                        .step_by(i)
+                        .for_each(|j| is[j] = false);
+                }
+                i += 1;
+            }
+            is
+        };
+        let found: Vec<u64> = (2..=limit)
+            .filter(|&p| sieve[p as usize] && is_mersenne_prime(p))
+            .collect();
+        assert_eq!(found, EXPONENTS[..22].to_vec());
+    }
+
+    /// All 26 table entries pass. Slow: cargo test --release -- --ignored
+    #[test]
+    #[ignore]
+    fn all_26_exponents_prime() {
+        assert_eq!(find_mersenne_primes(26).found, 26);
     }
 }

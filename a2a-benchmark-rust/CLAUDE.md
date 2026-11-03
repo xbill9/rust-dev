@@ -11,6 +11,7 @@ Rust A2A v1.0 Mersenne prime agents + benchmark. See README.md.
 - `scripts/start-all.sh` (called by `test-cli.sh` and `bench.sh`) rebuilds and restarts both agents every time, so they always serve the current code.
 - Keep the reply line `Found first N Mersenne primes in X.XXXXms.` unchanged: `scripts/test-cli.sh` greps for it.
 - Before committing: `cargo fmt && cargo clippy --all-targets && cargo test --release && scripts/test-cli.sh`.
+- Correctness through N=22 is checked exhaustively (every prime p <= 9941) by `cargo test --release -- --ignored` (~25 s); run it after touching `src/lib.rs`.
 - ADK coordinator lives in `adk/rust_bench/` (Python, `google-adk` 2.13.0 in the pyenv Python, Gemini on Vertex via `scripts/adk-env.sh`). `adk api_server --a2a` must run from the rig root with agents dir `adk`; it serves only agent folders that contain `agent.json`.
 - ADK checks: `scripts/test-adk.sh` (calls Gemini). `scripts/check-adk-reply.py` verifies the model's `run_benchmark` arguments and that every number it quotes came from the tool; keep tool values pre-rounded so the model never rounds.
 - `serve-exec.sh` needs `--advertise-address http://localhost:8105` (ADK rejects cross-origin card URLs) and `--chunk=$'\n'` (without it stream requests fail and ADK errors). `mersenne-exec` prints the JSON line first, the summary last: ADK shows only the final chunk.
