@@ -134,7 +134,7 @@ def run_benchmark(min_n: int = 1, max_n: int = MAX_N, reps: int = 5) -> dict:
 
 root_agent = LlmAgent(
     name="rust_bench",
-    model=os.getenv("MODEL_NAME", "gemini-3.5-flash"),
+    model=os.getenv("MODEL_NAME", "gemini-3.8-flash"),
     description="Coordinator for the Rust Mersenne prime A2A agents.",
     instruction=f"""
 You coordinate two Rust agents that find the first N Mersenne primes (N <= {MAX_N}).

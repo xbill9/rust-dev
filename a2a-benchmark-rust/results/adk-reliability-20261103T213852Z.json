@@ -1,0 +1,18 @@
+{
+  "model": "gemini-3.8-flash",
+  "runs": 10,
+  "bench_checks_passed": 10,
+  "routed_to_native": 10,
+  "routes": [
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent",
+    "native_rust_agent"
+  ]
+}

@@ -21,15 +21,31 @@ a2a CLI ──► adk api_server --a2a (:8106) ──Gemini──► RemoteA2aAg
 
 | Component | Version |
 |---|---|
+| A2A protocol | 1.0 (spec v1.0.1; cards carry `Major.Minor` only, per spec §3) |
 | `a2a-lf` / `a2a-server-lf` / `a2a-client-lf` | 0.4.2 / 0.5.3 / 0.2.9 |
 | `axum` / `tokio` / `num-bigint` | 0.8.9 / 1.54.1 / 0.5.1 |
+| Rust | 1.99.1, edition 2024 |
 | A2A CLI (`a2a`) | v0.3.1 |
-| ADK CLI (`google-adk`) / `a2a-sdk` | 2.13.0 / 1.3.0 |
-| Model | `gemini-3.5-flash` on Vertex AI (`MODEL_NAME` overrides) |
+| ADK CLI (`google-adk`) / `a2a-sdk` / `google-genai` | 2.13.0 / 1.3.0 / 2.34.0 |
+| Model | `gemini-3.8-flash` on Vertex AI (`MODEL_NAME` overrides) |
 
-Rust edition 2024. The `a2a-*-lf` crates come from [a2aproject/a2a-rs](https://github.com/a2aproject/a2a-rs).
+Every direct crate dependency is at its latest crates.io release (checked 2026-11-03). The one transitive crate behind, `matchit` 0.8.4, is pinned exactly (`=0.8.4`) by axum 0.8.9. The `a2a-*-lf` crates come from [a2aproject/a2a-rs](https://github.com/a2aproject/a2a-rs).
 
 ---
+
+#### Step 0 — A tour of the A2A CLI
+
+`scripts/cli-tour.sh` walks the `a2a` CLI through this rig and records every command with its output: the echo server, the native agent (card, send, stream, REST, data part, JSON output), task commands (`task get`, `task list`, `--async`, `task get --wait`), the exec-wrapped program, and the ADK coordinator. The latest transcript is `results/cli-tour-20261103T214445Z.md`. A sample:
+
+```console
+$ a2a task get -a http://localhost:8104 01a1a35f-2dc0-74c0-a8aa-c6a258430da7
+Status:   working (2026-11-03T21:44:46Z)
+$ a2a task get -a http://localhost:8104 01a1a35f-2dc0-74c0-a8aa-c6a258430da7 --wait --poll-interval 500ms
+Status:   completed (2026-11-03T21:44:47Z)
+  Found first 25 Mersenne primes in 1503.4420ms.
+```
+
+(Excerpt; the task was started with `a2a send --async 'first 25'`.)
 
 #### Step 1 — Install the CLIs
 
@@ -125,16 +141,16 @@ Direct calls, N=1..26, medians of 20 reps (`results/bench-20261103T211408Z.json`
 | 25 | 1625 | 1626.637 | 1625 | 1628.745 |
 | 26 | 2484 | 2485.911 | 2619 | 2622.511 |
 
-Through ADK, N=1..26, medians of 3 reps (`results/bench-20261103T211814Z.json`). All 78 calls were routed to `native_rust_agent` and read from its data part:
+Through ADK, N=1..26, medians of 3 reps, one run per model (`results/bench-20261103T211814Z.json` on `gemini-3.5-flash`, `results/bench-20261103T213900Z.json` on `gemini-3.8-flash`). In both runs all 26 ADK rows were routed to `native_rust_agent` and read from its data part:
 
-| N | adk compute ms | adk RTT ms |
-|---|---:|---:|
-| 1 | 0.002051 | 1665.053 |
-| 10 | 0.04513 | 1394.245 |
-| 20 | 72.95 | 1332.994 |
-| 22 | 279.8 | 1868.178 |
-| 24 | 869.2 | 2039.514 |
-| 26 | 2226 | 3455.492 |
+| N | 3.5-flash compute ms | 3.5-flash RTT ms | 3.8-flash compute ms | 3.8-flash RTT ms |
+|---|---:|---:|---:|---:|
+| 1 | 0.002051 | 1665.053 | 0.002615 | 2073.666 |
+| 10 | 0.04513 | 1394.245 | 0.04390 | 2458.155 |
+| 20 | 72.95 | 1332.994 | 68.52 | 2336.569 |
+| 22 | 279.8 | 1868.178 | 287.3 | 2679.324 |
+| 24 | 869.2 | 2039.514 | 879.3 | 3323.360 |
+| 26 | 2226 | 3455.492 | 2241 | 4123.353 |
 
 Native agent called directly, with and without a 1.3 s idle gap before each call, medians of 5 reps (`results/gap-20261103-native-*.json`):
 
@@ -147,9 +163,9 @@ Native agent called directly, with and without a 1.3 s idle gap before each call
 - 🟢 Every row through N=26 in all three series reports `found` = min(N, 26).
 - 🟢 Native SDK agent: 0.55–1.40 ms of protocol overhead per call.
 - ⚠️ `a2a server --exec`: 3.3–5.0 ms per call, which includes starting a process per message.
-- ⚠️ ADK in front: 1034–2477 ms of overhead per call, the Gemini round trip that picks the sub-agent.
+- ⚠️ ADK in front: the Gemini round trip that picks the sub-agent adds a median of 1328 ms per call on `gemini-3.5-flash` and 2283 ms on `gemini-3.8-flash` (medians of the per-N medians). The 3.8-flash run also had long tails: one N=9 call took 29.0 s. One run of 3 reps per model on a shared endpoint; rerun before quoting the model difference.
 - ⚠️ Spacing between calls slows mid-range compute. The same native process takes 68.09 ms at N=20 when calls arrive 1.3 s apart, against 26.07 ms back to back, which matches the exec and ADK series. By N=25 the gap closes (native 1625, exec 1625). Compare compute times only between runs paced the same way. The CPU-level cause (clock scaling or core placement on this hybrid CPU) is untested.
-- 🟢 Routing and quoting: 10 of 10 checked ADK benchmark requests (varied ranges and reps) sent the requested arguments and quoted only tool values; 10 of 10 unnamed "Calculate the first N" requests went to `native_rust_agent`.
+- 🟢 Routing and quoting (`scripts/adk-reliability.sh`): 10 of 10 checked ADK benchmark requests (varied ranges and reps) sent the requested arguments and quoted only tool values, and 10 of 10 unnamed "Calculate the first N" requests went to `native_rust_agent`, on both `gemini-3.5-flash` and `gemini-3.8-flash`. The 3.8-flash run is `results/adk-reliability-20261103T213852Z.json`.
 
 #### The nine bugs from `a2a-benchmark`, checked here
 
@@ -184,7 +200,7 @@ src/bin/mersenne-agent.rs    native A2A v1.0 agent (a2a-server-lf)
 src/bin/mersenne-exec.rs     stdin/stdout program for a2a server --exec
 src/bin/mersenne-bench.rs    benchmark client (a2a-client-lf)
 adk/rust_bench/              ADK coordinator: agent.py, agent.json (A2A card for --a2a)
-scripts/                     serve, start/stop, adk run/web, CLI + ADK tests, reply checker, bench
+scripts/                     serve, start/stop, adk run/web, CLI tour, CLI + ADK tests, reply checker, reliability, bench
 results/                     benchmark output
 ```
 

@@ -3,7 +3,7 @@
 Rust A2A v1.0 Mersenne prime agents + benchmark. See README.md.
 
 - Official SDK crates: `a2a-lf` (as `a2a`), `a2a-server-lf` (as `a2a_server`), `a2a-client-lf` (as `a2a_client`), from github.com/a2aproject/a2a-rs.
-- Ports: 8104 native SDK agent, 8105 `a2a server --exec` wrapping `mersenne-exec`, 8106 `adk api_server --a2a` (rust_bench), 8107 `adk web`.
+- Ports: 8104 native SDK agent, 8105 `a2a server --exec` wrapping `mersenne-exec`, 8106 `adk api_server --a2a` (rust_bench), 8107 `adk web`, 8108 `a2a server --echo` (cli-tour.sh).
 - A2A CLI (`a2a`, Go, v0.3.1) is the reference client: `scripts/test-cli.sh`.
 - Data parts round-trip through protobuf `Struct`: integers arrive as floats (`6.0`). Read numbers with `as_f64`.
 - Benchmark statistics are computed in `mersenne-bench`, never by hand. Quote `results/*.json`.
