@@ -9,7 +9,8 @@
 //! All statistics (median, min, max) are computed here, never by hand.
 //!
 //! Usage: mersenne-bench [--min 1] [--max 22] [--reps 5] [--out results.json]
-//!                       [--agent name=url ...]
+//!                       [--gap-ms 0] [--agent name=url ...]
+//! --gap-ms idles before every timed call, to pace calls like a slower caller.
 //! Default agents: native=http://localhost:8104  exec=http://localhost:8105
 
 use std::time::Instant;
@@ -99,6 +100,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let max: usize = arg(&args, "--max", 22);
     let reps: usize = arg(&args, "--reps", 5).max(1);
     let out: String = arg(&args, "--out", "results.json".to_string());
+    let gap = std::time::Duration::from_millis(arg(&args, "--gap-ms", 0u64));
 
     let mut agents: Vec<(String, String)> = args
         .windows(2)
@@ -150,6 +152,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     metadata: None,
                     tenant: None,
                 };
+                if !gap.is_zero() {
+                    tokio::time::sleep(gap).await;
+                }
                 let t0 = Instant::now();
                 let resp = client.send_message(&req).await?;
                 let rtt_ms = t0.elapsed().as_secs_f64() * 1000.0;

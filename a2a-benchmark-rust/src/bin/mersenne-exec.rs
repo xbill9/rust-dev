@@ -1,10 +1,13 @@
 //! A2A-unaware Mersenne prime program for `a2a server --exec`.
 //!
-//! Reads the user's message on stdin, prints the summary line and then one
-//! JSON line with the structured report. Knows nothing about A2A: the
-//! `a2a` CLI wraps it (Step 3 of the A2A CLI introduction):
+//! Reads the user's message on stdin, prints one JSON line with the
+//! structured report and then the summary line. Knows nothing about A2A: the
+//! `a2a` CLI wraps it (Steps 3 and 4 of the A2A CLI introduction):
 //!
-//!   a2a server --exec "target/release/mersenne-exec" --port 8105
+//!   a2a server --exec "target/release/mersenne-exec" --chunk=$'\n' --port 8105
+//!
+//! The summary goes last because with `--chunk` each line is streamed as its
+//! own chunk, and ADK's RemoteA2aAgent shows only the final one.
 
 use std::io::{Read, Write};
 
@@ -21,7 +24,7 @@ fn main() {
 
     let mut out = std::io::stdout().lock();
     let json = serde_json::to_string(&report).expect("report serialises");
-    writeln!(out, "{}", report.summary())
-        .and_then(|_| writeln!(out, "{json}"))
+    writeln!(out, "{json}")
+        .and_then(|_| writeln!(out, "{}", report.summary()))
         .ok();
 }

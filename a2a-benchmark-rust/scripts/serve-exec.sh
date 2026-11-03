@@ -5,7 +5,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 cargo build --release --bin mersenne-exec
-exec a2a server --exec "$PWD/target/release/mersenne-exec" \
+exec a2a server --exec "$PWD/target/release/mersenne-exec" --chunk=$'\n' \
   --name "Mersenne Prime Exec Rust" \
   --description "mersenne-exec (Rust, A2A-unaware) wrapped by a2a server --exec" \
+  --advertise-address "http://localhost:${PORT:-8105}" \
   --port "${PORT:-8105}" --quiet

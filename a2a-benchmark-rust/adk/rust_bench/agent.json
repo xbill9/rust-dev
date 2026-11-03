@@ -1,0 +1,24 @@
+{
+  "name": "rust_bench",
+  "description": "ADK coordinator (Gemini) for the Rust Mersenne prime agents. Delegates single calculations over A2A and runs the benchmark through a tool.",
+  "version": "0.1.0",
+  "supportedInterfaces": [
+    {
+      "url": "http://localhost:8106/a2a/rust_bench",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": { "streaming": true },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "rust-mersenne",
+      "name": "Rust Mersenne primes",
+      "description": "Find the first N Mersenne primes with the native or exec Rust agent, or benchmark both.",
+      "tags": ["math", "benchmark", "rust"],
+      "examples": ["Use the native agent to find the first 12 Mersenne primes", "Benchmark both agents for N=1..20 with 5 reps"]
+    }
+  ]
+}

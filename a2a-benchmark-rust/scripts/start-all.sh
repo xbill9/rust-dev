@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 mkdir -p logs
 cargo build --release
 up() { curl -sf --max-time 2 "http://localhost:$1/.well-known/agent-card.json" >/dev/null; }
-scripts/stop-all.sh
+scripts/stop-all.sh --rust-only
 for _ in $(seq 1 20); do up 8104 || up 8105 || break; sleep 0.25; done
 nohup scripts/serve-native.sh > logs/native.log 2>&1 &
 nohup scripts/serve-exec.sh  > logs/exec.log   2>&1 &
