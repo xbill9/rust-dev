@@ -8,6 +8,9 @@ Rust A2A v1.0 Mersenne prime agents + benchmark. See README.md.
 - Data parts round-trip through protobuf `Struct`: integers arrive as floats (`6.0`). Read numbers with `as_f64`.
 - Benchmark statistics are computed in `mersenne-bench`, never by hand. Quote `results/*.json`.
 - Run benchmarks via `scripts/bench.sh` (`MIN`/`MAX`/`REPS` env vars); calling `mersenne-bench` directly defaults `--out` to `results.json` in the repo root. `results/` is committed.
+- The default range is the whole exponent table, N=1..26 (`EXPONENTS.len()`). Do not hard-code a smaller max: the original repo's `run_benchmark_1_22.py` cutoff hid a crash for a year (dev.to/gde "Why did my benchmark stop at N=22?").
+- `mersenne-bench` rejects a call whose report answers a different question (`requested != N` or `found != min(N, 26)`), or where an LLM was in the path without `transfer_to_agent` (timing could be model-written). Rows record `report_source` (data/text) and `routed_to`.
+- Compute times print with 4 significant figures (`sig4`), never fixed decimals: fixed `%.2f` once turned sub-10 µs runs into `0.00`.
 - `scripts/start-all.sh` (called by `test-cli.sh` and `bench.sh`) rebuilds and restarts both agents every time, so they always serve the current code.
 - Keep the reply line `Found first N Mersenne primes in X.XXXXms.` unchanged: `scripts/test-cli.sh` greps for it.
 - Before committing: `cargo fmt && cargo clippy --all-targets && cargo test --release && scripts/test-cli.sh`.

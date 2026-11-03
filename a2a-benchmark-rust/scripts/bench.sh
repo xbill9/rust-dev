@@ -1,5 +1,5 @@
 #!/bin/bash
-# Full benchmark, N=1..22, 5 reps each, both Rust agents. Results -> results/.
+# Full benchmark, N=1..26 (the whole exponent table), 5 reps each, both Rust agents. Results -> results/.
 #   ADK=1 adds a third series: the same requests sent to the ADK coordinator
 #   (adk api_server --a2a, Gemini), which routes them to the native agent.
 set -euo pipefail
@@ -13,5 +13,5 @@ else
 fi
 mkdir -p results
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
-target/release/mersenne-bench --min "${MIN:-1}" --max "${MAX:-22}" --reps "${REPS:-5}" \
+target/release/mersenne-bench --min "${MIN:-1}" --max "${MAX:-26}" --reps "${REPS:-5}" \
   --out "results/bench-$stamp.json" "${agents[@]}" "$@" | tee "results/bench-$stamp.md"

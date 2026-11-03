@@ -50,6 +50,10 @@ exec_agent = RemoteA2aAgent(
 )
 
 
+def _sig4(x: float) -> float:
+    return float(f"{x:.4g}")
+
+
 def _summary(rows: list[dict], agent: str) -> dict:
     mine = [r for r in rows if r["agent"] == agent]
     if not mine:
@@ -62,12 +66,12 @@ def _summary(rows: list[dict], agent: str) -> dict:
         "overhead_ms_median_max": round(max(over), 3),
         "largest_n": last["n"],
         "largest_n_found": last["found"],
-        "largest_n_compute_ms_median": round(last["compute_ms_median"], 4),
+        "largest_n_compute_ms_median": _sig4(last["compute_ms_median"]),
         "largest_n_rtt_ms_median": round(last["rtt_ms_median"], 3),
     }
 
 
-def run_benchmark(min_n: int = 1, max_n: int = 20, reps: int = 5) -> dict:
+def run_benchmark(min_n: int = 1, max_n: int = MAX_N, reps: int = 5) -> dict:
     """Benchmark both Rust agents for N = min_n..max_n, `reps` calls per N.
 
     Every call records the agent's own compute time and the client's round
@@ -108,8 +112,9 @@ def run_benchmark(min_n: int = 1, max_n: int = 20, reps: int = 5) -> dict:
             return {"error": proc.stderr.strip()[-2000:]}
         rows = json.loads(Path(out.name).read_text())
 
-    # Rounded here so the model has nothing left to round: compute to 4
-    # decimals (sub-microsecond values exist), RTT and overhead to 3.
+    # Rounded here so the model has nothing left to round. Compute keeps 4
+    # significant figures: fixed decimals would flatten sub-microsecond
+    # medians toward 0. RTT and overhead keep 3 decimals (1 us).
     return {
         "used": {"min_n": min_n, "max_n": max_n, "reps": reps},
         "summary": {a: _summary(rows, a) for a in ("native", "exec")},
@@ -118,7 +123,7 @@ def run_benchmark(min_n: int = 1, max_n: int = 20, reps: int = 5) -> dict:
                 "agent": r["agent"],
                 "n": r["n"],
                 "found": r["found"],
-                "compute_ms_median": round(r["compute_ms_median"], 4),
+                "compute_ms_median": _sig4(r["compute_ms_median"]),
                 "rtt_ms_median": round(r["rtt_ms_median"], 3),
                 "overhead_ms_median": round(r["overhead_ms_median"], 3),
             }
@@ -142,7 +147,7 @@ transfer to the named agent. If no agent is named, use native_rust_agent.
 Their reply line reads "Found first N Mersenne primes in X.XXXXms."; pass it on as is.
 
 For a benchmark or comparison, call run_benchmark once with the range and reps the
-user asked for (defaults 1..20, 5 reps). Report the 'used' arguments and the numbers
+user asked for (defaults 1..{MAX_N}, 5 reps). Report the 'used' arguments and the numbers
 from 'summary' and 'rows' exactly as returned. Do not calculate, average, round or
 estimate anything yourself. If you need a figure the tool did not return, say so.
 """,

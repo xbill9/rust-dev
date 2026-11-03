@@ -96,7 +96,7 @@ Single calculations are handed to a Rust agent with `transfer_to_agent`. Benchma
 #### Step 5 — Benchmark
 
 ```bash
-scripts/bench.sh                    # N=1..22, 5 reps, native + exec
+scripts/bench.sh                    # N=1..26 (whole exponent table), 5 reps, native + exec
 REPS=20 scripts/bench.sh            # more reps
 ADK=1 REPS=3 scripts/bench.sh       # adds the ADK series (Gemini routes each call to native)
 target/release/mersenne-bench --gap-ms 1300 --agent native=http://localhost:8104   # pace calls
@@ -104,31 +104,37 @@ target/release/mersenne-bench --gap-ms 1300 --agent native=http://localhost:8104
 
 Each call records `compute`, the agent's own Lucas-Lehmer time read from its structured report, and `RTT`, the round trip seen by the client. `overhead` is RTT minus compute, per call. `mersenne-bench` computes medians, minimums and maximums and writes `results/bench-<timestamp>.json` and `.md`.
 
+A call counts only if its report answers the question asked: `requested` equals N and `found` equals min(N, 26). When an LLM is in the path, the reply must show a `transfer_to_agent` to a Rust agent, so the timing comes from the agent and never from model text. Each row records `report_source` (`data` part or `text` line) and `routed_to`. Compute prints with four significant figures, so sub-microsecond medians stay visible.
+
 ---
 
 #### Results
 
 2026-11-03, 13th Gen Intel Core i7-1360P (16 threads), Linux, release build, every agent and the client on one machine.
 
-Direct calls, medians of 20 reps (`results/bench-20261103T200810Z.json`):
+Direct calls, N=1..26, medians of 20 reps (`results/bench-20261103T211408Z.json`):
 
 | N | native compute ms | native RTT ms | exec compute ms | exec RTT ms |
 |---|---:|---:|---:|---:|
-| 1 | 0.0009 | 0.834 | 0.0006 | 3.979 |
-| 10 | 0.0388 | 0.766 | 0.0424 | 4.054 |
-| 15 | 1.2912 | 2.194 | 2.2317 | 7.382 |
-| 18 | 15.9953 | 16.919 | 22.2887 | 27.283 |
-| 20 | 26.0751 | 26.922 | 62.4932 | 66.884 |
-| 22 | 181.1740 | 182.348 | 271.2701 | 274.464 |
+| 1 | 0.001039 | 0.732 | 0.0004555 | 4.047 |
+| 10 | 0.04249 | 0.858 | 0.04200 | 4.432 |
+| 20 | 26.33 | 27.173 | 60.21 | 64.750 |
+| 22 | 181.1 | 182.344 | 264.6 | 268.108 |
+| 23 | 290.1 | 291.441 | 374.6 | 378.533 |
+| 24 | 781.1 | 782.366 | 868.9 | 872.603 |
+| 25 | 1625 | 1626.637 | 1625 | 1628.745 |
+| 26 | 2484 | 2485.911 | 2619 | 2622.511 |
 
-Through ADK, medians of 3 reps (`results/bench-20261103T202430Z.json`), each request routed by Gemini to the native agent:
+Through ADK, N=1..26, medians of 3 reps (`results/bench-20261103T211814Z.json`). All 78 calls were routed to `native_rust_agent` and read from its data part:
 
 | N | adk compute ms | adk RTT ms |
 |---|---:|---:|
-| 1 | 0.0025 | 1415.209 |
-| 10 | 0.0441 | 1680.943 |
-| 20 | 65.4157 | 1119.595 |
-| 22 | 270.5966 | 1433.557 |
+| 1 | 0.002051 | 1665.053 |
+| 10 | 0.04513 | 1394.245 |
+| 20 | 72.95 | 1332.994 |
+| 22 | 279.8 | 1868.178 |
+| 24 | 869.2 | 2039.514 |
+| 26 | 2226 | 3455.492 |
 
 Native agent called directly, with and without a 1.3 s idle gap before each call, medians of 5 reps (`results/gap-20261103-native-*.json`):
 
@@ -138,11 +144,28 @@ Native agent called directly, with and without a 1.3 s idle gap before each call
 | 20 | 26.0747 | 68.0913 |
 | 22 | 180.6698 | 269.2014 |
 
-- 🟢 Native SDK agent: 0.33–1.14 ms of protocol overhead per call (20-rep run).
-- ⚠️ `a2a server --exec`: 3.3–5.1 ms per call, which includes starting a process per message.
-- ⚠️ ADK in front: 1054–1681 ms of overhead per call, which is the Gemini round trip that picks the sub-agent.
-- ⚠️ Spacing between calls slows large-N compute. The same native process takes 68.09 ms at N=20 when calls arrive 1.3 s apart, against 26.07 ms back to back, which matches the exec and ADK series. Compare compute times only between runs paced the same way. The CPU-level cause (clock scaling or core placement on this hybrid CPU) is untested.
+- 🟢 Every row through N=26 in all three series reports `found` = min(N, 26).
+- 🟢 Native SDK agent: 0.55–1.40 ms of protocol overhead per call.
+- ⚠️ `a2a server --exec`: 3.3–5.0 ms per call, which includes starting a process per message.
+- ⚠️ ADK in front: 1034–2477 ms of overhead per call, the Gemini round trip that picks the sub-agent.
+- ⚠️ Spacing between calls slows mid-range compute. The same native process takes 68.09 ms at N=20 when calls arrive 1.3 s apart, against 26.07 ms back to back, which matches the exec and ADK series. By N=25 the gap closes (native 1625, exec 1625). Compare compute times only between runs paced the same way. The CPU-level cause (clock scaling or core placement on this hybrid CPU) is untested.
 - 🟢 Routing and quoting: 10 of 10 checked ADK benchmark requests (varied ranges and reps) sent the requested arguments and quoted only tool values; 10 of 10 unnamed "Calculate the first N" requests went to `native_rust_agent`.
+
+#### The nine bugs from `a2a-benchmark`, checked here
+
+The original suite's [nine bugs](https://dev.to/gde/why-did-my-benchmark-stop-at-n22-a-debugging-story-in-nine-bugs-3m2l) and where each one stands in this rig:
+
+| Bug in `a2a-benchmark` | Here |
+|---|---|
+| `str()` of 6,002-digit primes crashed Python at N ≥ 24; the run was cut to N=22 | 🟢 no prime is converted to text; default range is the whole table, 1..26; tests cover all 26 and every prime exponent ≤ 9941 |
+| Go formatted primes inside the timed region | 🟢 timed region is Lucas-Lehmer plus pushing a `u64` |
+| `time.time()` wall clock | 🟢 `std::time::Instant`, monotonic |
+| Timing regexed out of LLM prose | 🟢 read from the agent's data part or JSON line; LLM-path calls must show a transfer to a Rust agent |
+| Agents echoed the requested count | 🟢 `found` is reported and checked against min(N, 26); oversized counts saturate instead of falling back to 5 |
+| `%.2f` turned sub-10 µs runs into `0.00` | 🟢 full precision in `results/`, four significant figures in tables and in the ADK tool |
+| Direct and LLM pipelines on one chart | 🟢 separate series and tables, ADK labelled as Gemini-routed |
+| Go's `ns` suffix unknown to the parser | 🟢 timing travels as a number in ms, no unit parsing |
+| Reused `contextId` let Gemini say "I already did that" | 🟢 every request goes without a `contextId`, so each gets a fresh ADK session |
 
 #### 🔎 Tip: two `a2a server --exec` flags matter to ADK
 
