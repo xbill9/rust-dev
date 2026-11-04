@@ -1,4 +1,10 @@
-devto-gde = https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
-repo = https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust
-medium = PENDING
-substack = PENDING
+# Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
+# run on purpose: a post whose links do not resolve is worse than no post.
+# dev.to published 2026-11-04; Medium and Substack are drafts.
+devto-gde  = https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
+medium     = PENDING
+substack   = PENDING
+builder    = SKIP
+devto-aws  = SKIP
+linkedin   = PENDING
+repo       = https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust
