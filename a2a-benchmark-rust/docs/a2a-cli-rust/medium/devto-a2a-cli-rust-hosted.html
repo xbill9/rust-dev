@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.11" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The A2A CLI and Rust: The Same Code, Three Ways to Serve It</title>
+  <meta name="description" content="A tour of the A2A CLI against Rust agents on A2A v1.0: the official Rust SDK, a plain stdin/stdout program wrapped by a2a server --exec, and an ADK coordinator on Gemini, each timed from the CLI and from a Rust client." />
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    body{font-family:-apple-system,'Segoe UI',Roboto,'Liberation Sans',Arial,sans-serif;
+         font-size:18px;line-height:1.58;max-width:42em;color:#242424;}
+    h1,h2,h3,h4{font-weight:700;line-height:1.25;margin-top:1.8em;}
+    h4{font-size:1.25em;}
+    img{max-width:100%;height:auto;display:block;margin:1.6em 0;}
+    pre{background:#f7f7f7;border:1px solid #e6e6e6;border-radius:4px;
+        padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.45;}
+    code{font-family:'Liberation Mono',Menlo,Consolas,monospace;}
+    :not(pre)>code{background:#f2f2f2;padding:1px 5px;border-radius:3px;font-size:.9em;}
+    blockquote{border-left:3px solid #ddd;margin-left:0;padding-left:1em;color:#555;}
+    hr{border:0;border-top:1px solid #e6e6e6;margin:2.4em 0;}
+  </style>
+</head>
+<body>
+<p>This article provides a step by step guide to the A2A CLI, driven
+against Rust agents that speak A2A Protocol v1.0. The same Rust code, a
+Lucas-Lehmer test over the first N Mersenne prime exponents, is served
+three ways: on the official A2A Rust SDK, as a plain stdin/stdout
+program wrapped by <code>a2a server --exec</code>, and behind an ADK
+coordinator on Gemini started with the ADK CLI. Each one is timed from
+the A2A CLI and from a Rust client.</p>
+<figure><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-cover.dbab2d14.jpg" alt="The A2A CLI and Rust: The Same Code, Three Ways to Serve It" /></figure>
+<p><a
+href="https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust">https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust</a></p>
+<p><strong>The A2A CLI talks to all three with the same commands, and
+<code>a2a server --exec</code> turns a 30-line program with no A2A code
+into an agent that ADK can call.</strong> One <code>a2a send</code> from
+a shell takes a median 20.74 ms against the SDK agent, of which 7.62 ms
+is starting the CLI. From a Rust client the SDK agent adds 0.55 to 1.40
+ms per call, the wrapped program 3.33 to 5.05 ms, and the ADK
+coordinator a median 1328 ms on <code>gemini-3.5-flash</code> and 2283
+ms on <code>gemini-3.8-flash</code>. Every call through N=26 returned
+the right count of primes.</p>
+<hr />
+<h4 id="what-is-being-built">What Is Being Built?</h4>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-1.png"
+alt="Table: Agent, Port, How it speaks A2A" /></p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-diagram-1.png" alt="diagram" /></p>
+<p>Versions, read from the machine on 2026-11-03:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-2.png"
+alt="Table: Component, Version" /></p>
+<p>The <code>a2a-*-lf</code> crates are the official SDK from
+<code>a2aproject/a2a-rs</code>. Agent cards carry the protocol as
+<code>Major.Minor</code>, so they read <code>1.0</code>.</p>
+<hr />
+<h4 id="step-1--install-the-a2a-cli">Step 1 — Install the A2A CLI</h4>
+<p>The CLI is one Go binary. Homebrew, WinGet and release binaries work;
+from source:</p>
+<pre class="shell"><code>go install github.com/a2aproject/a2a-cli@latest
+mv &quot;$(command -v a2a-cli)&quot; &quot;$(dirname &quot;$(command -v a2a-cli)&quot;)/a2a&quot;
+a2a version
+a2a v0.3.1
+commit:  none
+built:   unknown
+go:      go1.26.3
+os/arch: linux/amd64</code></pre>
+<p><code>go install</code> names the binary <code>a2a-cli</code>; the
+docs and the CLI's own skill call it <code>a2a</code>.</p>
+<hr />
+<h4 id="step-2--talk-to-an-echo-server">Step 2 — Talk to an Echo
+Server</h4>
+<p><code>a2a server --echo</code> starts an agent that sends back what
+it receives, so the client can be checked before any agent code
+exists:</p>
+<pre class="shell"><code>a2a server --echo --port 8108 &amp;
+a2a send -a http://localhost:8108 &quot;hello world from A2A&quot;
+Task:     01a1a35f-2b2b-7f3a-92a2-e3dc6c69e359
+Context:  01a1a35f-2b2c-7120-ac45-a74adab9d1d2
+Status:   completed (2026-11-03T16:44:45-05:00)
+Artifacts:
+  [01a1a35f-2b2c-71ba-8e6c-22c4b7c210df] hello world from A2A
+History:
+  [user] hello world from A2A</code></pre>
+<p>Every <code>send</code> creates a task with an id, a context, a final
+status and its artifacts. The Go servers started by the CLI stamp local
+time; the Rust SDK agent stamps UTC.</p>
+<hr />
+<h4 id="step-3--build-and-start-the-rust-agents">Step 3 — Build and
+Start the Rust Agents</h4>
+<p>The rig is one Cargo project with four binaries: the SDK agent, the
+stdin/stdout program, the benchmark client, and a shared library holding
+the Lucas-Lehmer code.</p>
+<pre class="shell"><code>git clone https://github.com/xbill9/rust-dev
+cd rust-dev/a2a-benchmark-rust
+cargo build --release
+scripts/start-all.sh
+agents up: 8104 native, 8105 exec</code></pre>
+<p><code>start-all.sh</code> rebuilds, stops any running copy, starts
+the SDK agent on 8104 and <code>a2a server --exec</code> on 8105 with
+logs in <code>logs/</code>, and waits until both cards answer.
+<code>scripts/test-cli.sh</code> runs the CLI commands below against
+them and checks each reply.</p>
+<hr />
+<h4 id="step-4--read-an-agent-card">Step 4 — Read an Agent Card</h4>
+<p><code>card get</code> fetches
+<code>/.well-known/agent-card.json</code> and prints what the agent
+offers:</p>
+<pre class="shell"><code>a2a card get -a http://localhost:8104
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8104/jsonrpc
+  HTTP+JSON (A2A v1.0)   http://localhost:8104/rest
+Streaming:    true
+Skills:
+  find-mersenne-rust   Find Mersenne Primes in Rust</code></pre>
+<p>The card lists two interfaces. The CLI picks one, and
+<code>--transport</code> chooses.</p>
+<hr />
+<h4 id="step-5--send-stream-switch-transport-send-data">Step 5 — Send,
+Stream, Switch Transport, Send Data</h4>
+<p>A plain message:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8104 &quot;Calculate the first 12 Mersenne primes&quot;
+Status:   completed (2026-11-03T21:44:45Z)
+  Found first 12 Mersenne primes in 0.0902ms.
+Artifacts:
+  [mersenne-report] Found first 12 Mersenne primes in 0.0902ms. {&quot;elapsed_ms&quot;:0.090239,&quot;exponents&quot;:[2,3,5,7,13,17,19,31,61,89,107,127],&quot;found&quot;:12,&quot;requested&quot;:12}</code></pre>
+<p>The <code>mersenne-report</code> artifact carries two parts: the
+summary as text, and the same result as a data part, so a client reads
+the timing from a field.</p>
+<p><code>--stream</code> prints each event as it arrives, here the
+<code>working</code> status before the result:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8104 --stream &quot;first 8&quot;
+[status] working
+Task:     01a1a35f-2b64-77b5-9417-18b1f425b17d
+Context:  01a1a35f-2b64-77b5-9417-18b24253b719
+Status:   completed (2026-11-03T21:44:45Z)
+  Found first 8 Mersenne primes in 0.0164ms.</code></pre>
+<p><code>--transport rest</code> sends the same request over HTTP+JSON,
+and <code>--data-part</code> sends structured input:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8104 --transport rest &quot;first 4&quot;
+a2a send -a http://localhost:8104 --data-part &#39;{&quot;count&quot;: 6}&#39;
+  Found first 4 Mersenne primes in 0.0080ms.
+  Found first 6 Mersenne primes in 0.0108ms.</code></pre>
+<hr />
+<h4 id="mag_right-tip-data-parts-arrive-as-floats">🔎 Tip: Data Parts
+Arrive as Floats</h4>
+<p>A2A v1.0 carries data parts as a protobuf <code>Struct</code>, whose
+only number type is a double. <code>{"count": 6}</code> sent by the CLI
+reaches the agent as <code>6.0</code>, so a strict integer field fails
+to deserialise. Read numbers with <code>as_f64</code> and check for a
+whole value:</p>
+<pre class="rust"><code>if let PartContent::Data(v) = &amp;part.content
+    &amp;&amp; let Some(n) = v.get(&quot;count&quot;).and_then(|n| n.as_f64())
+    &amp;&amp; n &gt;= 1.0
+    &amp;&amp; n.fract() == 0.0
+{
+    return n as usize;
+}</code></pre>
+<hr />
+<h4 id="step-6--script-it-with-json-output">Step 6 — Script It With JSON
+Output</h4>
+<p><code>-o json</code> prints the whole task, which pipes into
+anything:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8104 -o json &#39;first 3&#39; | python3 -c &#39;import sys,json; t=json.load(sys.stdin)[&quot;task&quot;]; print(t[&quot;status&quot;][&quot;state&quot;], [p for a in t[&quot;artifacts&quot;] for p in a[&quot;parts&quot;] if &quot;data&quot; in p][0][&quot;data&quot;])&#39;
+TASK_STATE_COMPLETED {&#39;elapsed_ms&#39;: 0.007166, &#39;exponents&#39;: [2, 3, 5], &#39;found&#39;: 3, &#39;requested&#39;: 3}</code></pre>
+<hr />
+<h4 id="step-7--tasks-list-start-in-the-background-wait">Step 7 — Tasks:
+List, Start in the Background, Wait</h4>
+<p>The SDK agent keeps its tasks in memory, and the CLI reads them
+back:</p>
+<pre class="shell"><code>a2a task list -a http://localhost:8104
+ID                                    STATUS     CONTEXT
+01a1a35f-2b4f-7190-b6df-81bb7b76c2cc  completed  01a1a35f-2b4f-7190-b6df-81bca35e8b6d
+01a1a35f-2b64-77b5-9417-18b1f425b17d  completed  01a1a35f-2b64-77b5-9417-18b24253b719
+01a1a35f-2bab-7012-b094-1022dce75f36  completed  01a1a35f-2bab-7012-b094-1023824b35eb</code></pre>
+<p><code>--async</code> returns as soon as the task exists. N=25 takes
+over a second, long enough to catch it running:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8104 --async &quot;first 25&quot;
+Task:     01a1a3f5-9da1-746b-abae-84307e4e1735
+Context:  01a1a3f5-9da1-746b-abae-8431b422e72e
+Status:   working (2026-11-04T00:29:05Z)
+History:
+  [user] first 25</code></pre>
+<p><code>task get --wait</code> polls until the task finishes:</p>
+<pre class="shell"><code>a2a task get -a http://localhost:8104 01a1a3f5-9da1-746b-abae-84307e4e1735 --wait --poll-interval 500ms
+Task:     01a1a3f5-9da1-746b-abae-84307e4e1735
+Context:  01a1a3f5-9da1-746b-abae-8431b422e72e
+Status:   completed (2026-11-04T00:29:06Z)
+  Found first 25 Mersenne primes in 1509.7683ms.</code></pre>
+<hr />
+<h4 id="step-8--the-native-rust-agent">Step 8 — The Native Rust
+Agent</h4>
+<p>The SDK agent is one <code>AgentExecutor</code>. It emits a
+<code>working</code> status, runs the big-integer work on a blocking
+thread, then returns the finished task:</p>
+<pre class="rust"><code>let done = async move {
+    // Big-integer work is CPU-bound; keep it off the async workers.
+    let report = tokio::task::spawn_blocking(move || find_mersenne_primes(count))
+        .await
+        .map_err(|e| A2AError::internal(format!(&quot;worker panicked: {e}&quot;)))?;
+    let summary = report.summary();
+    let data = serde_json::to_value(&amp;report)
+        .map_err(|e| A2AError::internal(format!(&quot;serialise report: {e}&quot;)))?;
+    // ... Task { status: Completed, artifacts: [Part::text(summary), Part::data(data)] }
+};
+Box::pin(stream::once(async { Ok(working) }).chain(stream::once(done)))</code></pre>
+<p>The server wires the SDK's routers into axum, one per transport plus
+the card:</p>
+<pre class="rust"><code>let handler = Arc::new(DefaultRequestHandler::new(MersenneExecutor, InMemoryTaskStore::new()));
+let card = Arc::new(StaticAgentCard::new(agent_card(&amp;base)));
+ 
+let app = axum::Router::new()
+    .nest(&quot;/jsonrpc&quot;, a2a_server::jsonrpc::jsonrpc_router(handler.clone()))
+    .nest(&quot;/rest&quot;, a2a_server::rest::rest_router(handler))
+    .merge(a2a_server::agent_card::agent_card_router(card));</code></pre>
+<p>The Lucas-Lehmer test runs on <code>num-bigint</code> with the
+reduction mod 2^p − 1 done by folding the high bits onto the low ones.
+The timed region holds only the tests, on a monotonic clock, and no
+prime is ever turned into a decimal string. Two slow tests check the
+arithmetic: one runs the test on every prime exponent up to 9941 and
+asserts it accepts exactly the first 22 known ones, the other confirms
+all 26:</p>
+<pre class="shell"><code>cargo test --release --lib -- --ignored
+test tests::all_26_exponents_prime ... ok
+test tests::exhaustive_through_n22 ... ok
+ 
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 25.70s</code></pre>
+<hr />
+<h4 id="step-9--serve-a-plain-program-with-a2a-server---exec">Step 9 —
+Serve a Plain Program With <code>a2a server --exec</code></h4>
+<p><code>mersenne-exec</code> knows nothing about A2A. It reads the
+message on stdin and prints two lines:</p>
+<pre class="shell"><code>echo &#39;first 5&#39; | target/release/mersenne-exec
+{&quot;requested&quot;:5,&quot;found&quot;:5,&quot;elapsed_ms&quot;:0.007023000000000001,&quot;exponents&quot;:[2,3,5,7,13]}
+Found first 5 Mersenne primes in 0.0070ms.</code></pre>
+<p>The A2A CLI makes it an agent:</p>
+<pre class="shell"><code>a2a server --exec &quot;$PWD/target/release/mersenne-exec&quot; --chunk=$&#39;\n&#39; \
+  --name &quot;Mersenne Prime Exec Rust&quot; \
+  --advertise-address &quot;http://localhost:8105&quot; --port 8105</code></pre>
+<p>The same client commands work against it:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8105 --stream &quot;first 8&quot;
+Status:   submitted
+History:
+  [user] first 8
+[status] working
+[artifact] {&quot;requested&quot;:8,&quot;found&quot;:8,&quot;elapsed_ms&quot;:0.01543,&quot;exponents&quot;:[2,3,5,7,13,17,19,31]}Found first 8 Mersenne primes in 0.0154ms.
+[status] completed</code></pre>
+<p>The exec server starts the program once per message, hands it the
+text, and returns stdout as the artifact.</p>
+<hr />
+<h4 id="mag_right-tip-two---exec-flags-adk-needs">🔎 Tip: Two
+<code>--exec</code> Flags ADK Needs</h4>
+<ul>
+<li><code>--advertise-address http://localhost:8105</code>. The exec
+server's card names <code>127.0.0.1</code> by default, and ADK's
+<code>RemoteA2aAgent</code> refuses a card whose RPC URL has a different
+origin from the one the card came from.</li>
+<li><code>--chunk=$'\n'</code>. With it, each output line streams as its
+own chunk. Without it, stream requests get
+<code>UNSUPPORTED_OPERATION</code>: the Go CLI falls back to polling and
+ADK's Python client fails. ADK keeps only the last chunk, so
+<code>mersenne-exec</code> prints the JSON line first and the summary
+last.</li>
+</ul>
+<hr />
+<h4 id="step-10--put-adk-in-front">Step 10 — Put ADK in Front</h4>
+<p>ADK needs its Python package and Gemini on Vertex AI, signed in with
+application-default credentials:</p>
+<pre class="shell"><code>pip install -U &quot;google-adk[a2a]&quot;
+gcloud auth application-default login
+source scripts/adk-env.sh</code></pre>
+<p><code>adk-env.sh</code> sets
+<code>GOOGLE_GENAI_USE_VERTEXAI=TRUE</code>,
+<code>GOOGLE_CLOUD_LOCATION=global</code>, the project, and
+<code>MODEL_NAME</code>, which defaults to
+<code>gemini-3.8-flash</code>.</p>
+<p><code>adk/rust_bench/agent.py</code> is an ADK <code>LlmAgent</code>
+with both Rust agents as <code>RemoteA2aAgent</code> sub-agents and one
+tool:</p>
+<pre class="python"><code>native_agent = RemoteA2aAgent(
+    name=&quot;native_rust_agent&quot;,
+    description=&quot;Rust A2A v1.0 agent on the official a2a-rs SDK. ...&quot;,
+    agent_card=f&quot;{NATIVE_URL}{AGENT_CARD_WELL_KNOWN_PATH}&quot;,
+)
+ 
+root_agent = LlmAgent(
+    name=&quot;rust_bench&quot;,
+    model=os.getenv(&quot;MODEL_NAME&quot;, &quot;gemini-3.8-flash&quot;),
+    tools=[run_benchmark],
+    sub_agents=[native_agent, exec_agent],
+)</code></pre>
+<p>The ADK CLI runs it three ways:</p>
+<pre class="shell"><code>adk run rust_bench                                # terminal
+adk web --port 8107                               # dev UI
+adk api_server --a2a --port 8106 adk              # A2A server, from the rig root</code></pre>
+<p><code>adk api_server --a2a</code> serves each agent folder that holds
+an <code>agent.json</code> card, at <code>/a2a/&lt;name&gt;</code>;
+<code>scripts/start-adk.sh</code> starts it in the background. The A2A
+CLI then treats the coordinator like any other agent:</p>
+<pre class="shell"><code>a2a send -a http://localhost:8106/a2a/rust_bench/.well-known/agent-card.json \
+  --timeout 120s &quot;Find the first 9 Mersenne primes with the exec agent&quot;
+Status:   completed (2026-11-03T21:44:51Z)
+Artifacts:
+  [f2d2f27d-24ce-4120-8368-d966c99617a9] Found first 9 Mersenne primes in 0.0236ms.
+History:
+  [user] Find the first 9 Mersenne primes with the exec agent
+  [agent] {&quot;args&quot;:{&quot;agent_name&quot;:&quot;exec_rust_agent&quot;},&quot;id&quot;:&quot;call_1332004&quot;,&quot;name&quot;:&quot;transfer_to_agent&quot;}
+  [agent] {&quot;id&quot;:&quot;call_1332004&quot;,&quot;name&quot;:&quot;transfer_to_agent&quot;,&quot;response&quot;:{&quot;result&quot;:null}}
+  [agent] {&quot;requested&quot;:9,&quot;found&quot;:9,&quot;elapsed_ms&quot;:0.023635,&quot;exponents&quot;:[2,3,5,7,13,17,19,31,61]}
+  [agent] Found first 9 Mersenne primes in 0.0236ms.</code></pre>
+<p>The history shows the hand-off: Gemini calls
+<code>transfer_to_agent</code>, the Rust agent answers, and its JSON
+report comes back through two A2A hops.</p>
+<hr />
+<h4 id="step-11--keep-the-model-away-from-the-numbers">Step 11 — Keep
+the Model Away From the Numbers</h4>
+<p>A benchmark through an LLM can time the model writing a number. Two
+rules keep the timing in code:</p>
+<ul>
+<li><strong>The benchmark client checks every reply.</strong>
+<code>mersenne-bench</code> reads the timing from the agent's data part
+or JSON line, rejects a report where <code>requested</code> differs from
+N or <code>found</code> differs from min(N, 26), and rejects an LLM-path
+reply with no <code>transfer_to_agent</code> to a Rust agent. Each row
+records where its report came from and who it was routed to.</li>
+<li><strong>ADK benchmarks go through a tool.</strong>
+<code>run_benchmark</code> runs <code>mersenne-bench</code> and returns
+medians already computed and rounded. The instruction tells Gemini to
+quote them, and <code>scripts/check-adk-reply.py</code> verifies a
+reply: one <code>run_benchmark</code> call, with the arguments asked
+for, and every number in the answer a value the tool returned.</li>
+</ul>
+<p>A benchmark request sent from the CLI, saved with
+<code>-o json</code>. The tool call and the head of the answer:</p>
+<pre class="shell"><code>a2a send -a $CARD --timeout 300s -o json &quot;Benchmark both agents for N=3 to 6 with 2 reps&quot; &gt; reply.json
+[tool call] {&quot;max_n&quot;: 6, &quot;min_n&quot;: 3, &quot;reps&quot;: 2}
+### Arguments Used
+- `min_n`: 3
+- `max_n`: 6
+- `reps`: 2</code></pre>
+<p>The answer goes on with a summary per agent and a row per N. The
+check:</p>
+<pre class="shell"><code>scripts/check-adk-reply.py reply.json 3 6 2
+state: TASK_STATE_COMPLETED
+run_benchmark calls: 1
+args sent: {&#39;max_n&#39;: 6, &#39;min_n&#39;: 3, &#39;reps&#39;: 2}  requested: {&#39;min_n&#39;: 3, &#39;max_n&#39;: 6, &#39;reps&#39;: 2}
+numbers in reply: 57  not from the tool: 0
+PASS</code></pre>
+<p><code>scripts/adk-reliability.sh</code> sends ten benchmark requests
+with varied ranges and ten requests that name no agent. On
+<code>gemini-3.8-flash</code>, 10 of 10 benchmark replies passed the
+checker and 10 of 10 unnamed requests went to
+<code>native_rust_agent</code>.</p>
+<p>The sweep covers the whole exponent table, N=1 to 26. Exponent 23209
+is a 6,987-digit number, and the arithmetic stays in
+<code>BigUint</code> throughout.</p>
+<hr />
+<h4 id="step-12--benchmark-from-a-rust-client">Step 12 — Benchmark From
+a Rust Client</h4>
+<pre class="shell"><code>REPS=20 scripts/bench.sh          # native + exec, N=1..26
+ADK=1 REPS=3 scripts/bench.sh     # adds the ADK series</code></pre>
+<p><code>mersenne-bench</code> is built on the SDK's client crate,
+<code>a2a-client-lf</code>. Each call records the agent's own compute
+time and the client's round trip; overhead is the round trip minus
+compute, per call. Direct calls, medians of 20 reps:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-3.png"
+alt="Table: N, native compute ms, native overhead ms, exec compute ms, exec overhead ms" /></p>
+<p>Through ADK, medians of 3 reps, one run per model. All 26 rows in
+each run went to <code>native_rust_agent</code> and read its data
+part:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-4.png"
+alt="Table: N, 3.5-flash compute ms, 3.5-flash round trip ms, 3.8-flash compute ms, 3.8-flash round trip ms" /></p>
+<p>The slowest single call on <code>gemini-3.8-flash</code> took 29.0 s,
+at N=9.</p>
+<hr />
+<h4 id="step-13--time-the-a2a-cli-itself">Step 13 — Time the A2A CLI
+Itself</h4>
+<p><code>scripts/cli-bench.py</code> runs one
+<code>a2a send -o json</code> process per call, the way a shell script
+would, and applies the same checks to each reply. Wall time covers
+starting the CLI, fetching the card, sending, and exiting. Two reference
+commands, 20 runs each:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-5.png"
+alt="Table: Command, Median ms, Min ms, Max ms" /></p>
+<p>The full sweep, N=1 to 26, 5 reps direct and 3 through ADK:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-6.png"
+alt="Table: Agent, Calls, Overhead per call, per-N medians, Median of the per-N medians" /></p>
+<p>Every ADK call went to <code>native_rust_agent</code>; the slowest
+took 22693.6 ms. The sweep times each agent in its own block, so native
+and exec ran minutes apart. Run in alternating order, N=1, 30 runs each
+(<code>scripts/cli-transport.py</code>):</p>
+<pre class="text"><code>native, default (JSON-RPC): median 20.74 ms, min 18.60, max 26.51
+native, --transport rest: median 21.49 ms, min 19.63, max 26.15
+exec (HTTP+JSON only): median 20.81 ms, min 18.67, max 28.07
+a2a version: median 7.62 ms, min 6.07, max 10.71</code></pre>
+<p>From a shell, the transport and the serving path make no difference
+to the CLI's cost: about 21 ms per call, about a third of it starting
+the process. Against the Rust client's 0.55 to 1.40 ms, the CLI fits
+scripts and checks, and the Rust client fits a benchmark.</p>
+<p>The CLI's overhead in the sweep drops to about 11 ms for both agents
+once compute passes 100 ms (N=21 and up). Why is untested.</p>
+<hr />
+<h4 id="mag_right-tip-compare-compute-only-between-runs-paced-alike">🔎
+Tip: Compare Compute Only Between Runs Paced Alike</h4>
+<p>The same native process at N=20 takes 26.07 ms when calls arrive back
+to back and 68.09 ms when each call follows a 1.3 s idle gap
+(<code>mersenne-bench --gap-ms 1300</code>). ADK's model round trip
+spaces calls out too, and its mid-range compute times sit close to the
+gap series: 68.52 ms at N=20 on <code>gemini-3.8-flash</code>. The
+CPU-level cause, clock scaling or core placement on a hybrid laptop CPU,
+is untested.</p>
+<hr />
+<h4 id="compare-and-contrast">Compare and Contrast</h4>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-benchmark-rust/docs/a2a-cli-rust/medium/img/devto-a2a-cli-rust-table-7.png"
+alt="Table: Serving path, Code the agent needs, Overhead from a Rust client, a2a send from a shell, N=1" /></p>
+<p>Rust-client ranges are the smallest and largest per-N medians; the
+ADK figures are the medians of its per-N medians. The exec figure
+includes starting a process for every message; how it splits between
+process start and the HTTP hop was not measured. At N=26 the work itself
+dominates every path: 2484 ms native and 2619 ms exec, direct.</p>
+<hr />
+<h4 id="so-which-one">So, Which One?</h4>
+<p>For an agent built to be one, use the SDK: about a millisecond of
+protocol cost, both transports, tasks the CLI can list and wait on.</p>
+<p>For a program that already exists, <code>a2a server --exec</code>
+makes it an agent with no code change. A few milliseconds per call buys
+that, and ADK can call it once the two flags are set.</p>
+<p>For routing by natural language, put ADK in front and keep the timing
+out of the model: a tool for anything computed, and a check that the
+model sent the arguments asked for.</p>
+<p>For talking to any of them, the A2A CLI is the one client:
+<code>card get</code>, <code>send</code>, <code>--stream</code>,
+<code>task get --wait</code>, and <code>-o json</code> for scripts. Each
+call costs about 21 ms, so time agents from a long-lived client.</p>
+<hr />
+<h4 id="summary">Summary</h4>
+<p>The goal of this article was to drive the A2A CLI against Rust agents
+on A2A v1.0, and to measure what each way of serving the same Rust code
+costs per call. The key to the solution was one benchmark client that
+reads timing from a structured report and checks that every reply
+answers the question asked. The results on one laptop were:</p>
+<ul>
+<li>🟢 The A2A CLI drove all three agents with the same commands: card,
+send, stream, REST, data parts, JSON output, task list,
+<code>--async</code> and <code>task get --wait</code></li>
+<li>🟢 Every call through N=26, from the Rust client and from the CLI,
+reported <code>found</code> = min(N, 26)</li>
+<li>🟢 The SDK agent added 0.55 to 1.40 ms per call from a Rust
+client</li>
+<li>🟢 <code>a2a server --exec</code> served an A2A-unaware program to
+the CLI and to ADK</li>
+<li>🟢 On <code>gemini-3.8-flash</code>, 10 of 10 benchmark replies
+quoted only tool values, and 10 of 10 unnamed requests went to the
+native agent</li>
+<li>⚠️ One <code>a2a send</code> from a shell costs about 21 ms whatever
+the agent, 7.62 ms of it starting the CLI</li>
+<li>⚠️ The wrapped program added 3.33 to 5.05 ms per call from a Rust
+client</li>
+<li>⚠️ ADK added a median 1328 ms per call on
+<code>gemini-3.5-flash</code> and 2283 ms on
+<code>gemini-3.8-flash</code>, with one call at 29.0 s</li>
+<li>❌ Compute times from calls spaced by idle gaps run slower and do
+not compare with back-to-back runs</li>
+</ul>
+<p>Scope: one 13th Gen Intel Core i7-1360P laptop on Linux, release
+build, every agent and client on the same machine, 2026-11-03 and
+2026-11-04. Rust-client series have 20 reps per N direct and 3 through
+ADK, with one run per model on Vertex AI's shared <code>global</code>
+endpoint, so the difference between the two Gemini models is a single
+sample. The CLI series has 5 reps per N direct and 3 through ADK, on
+<code>gemini-3.8-flash</code> only, and reliability was checked on that
+model only, ten requests of each kind. The gRPC transport,
+<code>task cancel</code>, <code>task subscribe</code>, push
+notifications and authentication were not exercised.</p>
+<p>The strategy for serving and benchmarking Rust A2A agents with the
+A2A CLI was validated with an incremental step by step approach.</p>
+<hr />
+<h4 id="references">References</h4>
+<ul>
+<li>The rig: <a
+href="https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust">https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust</a></li>
+<li>CLI tour transcripts: <a
+href="https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-tour-20261103T214445Z.md">https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-tour-20261103T214445Z.md</a>
+and <a
+href="https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-tour-20261104T002904Z.md">https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-tour-20261104T002904Z.md</a></li>
+<li>CLI timing: <a
+href="https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-bench-20261104T002328Z.md">https://github.com/xbill9/rust-dev/blob/main/a2a-benchmark-rust/results/cli-bench-20261104T002328Z.md</a></li>
+<li>Introducing the A2A CLI: <a
+href="https://a2a-protocol.org/latest/blog/2026/10/01/introducing-a2a-cli/">https://a2a-protocol.org/latest/blog/2026/10/01/introducing-a2a-cli/</a></li>
+<li>A2A CLI: <a
+href="https://github.com/a2aproject/a2a-cli">https://github.com/a2aproject/a2a-cli</a></li>
+<li>A2A Rust SDK: <a
+href="https://github.com/a2aproject/a2a-rs">https://github.com/a2aproject/a2a-rs</a></li>
+<li>Agent Development Kit: <a
+href="https://google.github.io/adk-docs/">https://google.github.io/adk-docs/</a></li>
+<li>Why Did My Benchmark Stop at N=22?: <a
+href="https://dev.to/gde/why-did-my-benchmark-stop-at-n22-a-debugging-story-in-nine-bugs-3m2l">https://dev.to/gde/why-did-my-benchmark-stop-at-n22-a-debugging-story-in-nine-bugs-3m2l</a></li>
+</ul>
+</body>
+</html>
