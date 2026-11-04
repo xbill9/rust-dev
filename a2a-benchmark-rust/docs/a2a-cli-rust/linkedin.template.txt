@@ -1,0 +1,11 @@
+{hook}
+
+{description}
+
+[[bullets]]What is in it:
+
+{bullets}
+
+[[/bullets]]{links}
+
+#A2A #Rust #AgentDevelopmentKit #Gemini #AIAgents

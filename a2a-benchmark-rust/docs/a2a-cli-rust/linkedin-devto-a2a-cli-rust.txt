@@ -1,0 +1,17 @@
+The new A2A CLI, driven against Rust agents: the same code served three ways, and what each way costs per call.
+
+A tour of the A2A CLI against Rust agents on A2A v1.0: the official Rust SDK, a plain stdin/stdout program wrapped by a2a server --exec, and an ADK coordinator on Gemini, each timed from the CLI and from a Rust client.
+
+What is in it:
+
+- 🟢 The A2A CLI drove all three agents with the same commands: card, send, stream, REST, data parts, JSON output, task list, --async and task get --wait
+- 🟢 Every call through N=26, from the Rust client and from the CLI, reported found = min(N, 26)
+- 🟢 The SDK agent added 0.55 to 1.40 ms per call from a Rust client
+- 🟢 a2a server --exec served an A2A-unaware program to the CLI and to ADK
+
+dev.to (Google Developer Experts): https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
+Medium: https://xbill999.medium.com/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-6f06bcf76f68
+Substack: https://xbill9.substack.com/p/the-a2a-cli-and-rust-the-same-code
+Source: https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust
+
+#A2A #Rust #AgentDevelopmentKit #Gemini #AIAgents

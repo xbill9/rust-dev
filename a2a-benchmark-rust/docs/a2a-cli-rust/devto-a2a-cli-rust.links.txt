@@ -1,10 +1,10 @@
 # Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
 # run on purpose: a post whose links do not resolve is worse than no post.
-# dev.to, Medium and Substack published 2026-11-04 (Medium and Substack emailed subscribers).
+# dev.to, Medium, Substack and LinkedIn published 2026-11-04 (Medium and Substack emailed subscribers).
 devto-gde  = https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
 medium     = https://xbill999.medium.com/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-6f06bcf76f68
 substack   = https://xbill9.substack.com/p/the-a2a-cli-and-rust-the-same-code
 builder    = SKIP
 devto-aws  = SKIP
-linkedin   = PENDING
+linkedin   = https://www.linkedin.com/feed/update/urn:li:activity:7523554207636013056/
 repo       = https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust
