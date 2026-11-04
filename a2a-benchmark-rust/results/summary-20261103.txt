@@ -1,0 +1,49 @@
+== direct, 20 reps (bench-20261103T211408Z.json): 52 rows
+exec: rows 26, found==min(N,26) in 26 of 26
+exec: per-N median overhead ms min 3.33 max 5.05 median 4.18
+exec: slowest single call 3.4 s at N=26
+exec: N=26 compute median ms 2619
+native: rows 26, found==min(N,26) in 26 of 26
+native: per-N median overhead ms min 0.55 max 1.40 median 0.84
+native: slowest single call 2.6 s at N=26
+native: N=26 compute median ms 2484
+== ADK gemini-3.5-flash, 3 reps (bench-20261103T211814Z.json): 78 rows
+adk: rows 26, found==min(N,26) in 26 of 26
+adk: per-N median overhead ms min 1034.27 max 2476.77 median 1328.32
+adk: slowest single call 3.6 s at N=26
+adk: routed_to [('native_rust_agent',)] report_source ['data']
+adk: N=26 compute median ms 2226
+exec: rows 26, found==min(N,26) in 26 of 26
+exec: per-N median overhead ms min 2.78 max 5.12 median 4.20
+exec: slowest single call 2.8 s at N=26
+exec: N=26 compute median ms 2725
+native: rows 26, found==min(N,26) in 26 of 26
+native: per-N median overhead ms min 0.61 max 1.38 median 0.94
+native: slowest single call 2.5 s at N=26
+native: N=26 compute median ms 2415
+== ADK gemini-3.8-flash, 3 reps (bench-20261103T213900Z.json): 78 rows
+adk: rows 26, found==min(N,26) in 26 of 26
+adk: per-N median overhead ms min 1796.04 max 10484.76 median 2283.02
+adk: slowest single call 29.0 s at N=9
+adk: routed_to [('native_rust_agent',)] report_source ['data']
+adk: N=26 compute median ms 2241
+exec: rows 26, found==min(N,26) in 26 of 26
+exec: per-N median overhead ms min 3.02 max 5.06 median 3.94
+exec: slowest single call 2.3 s at N=26
+exec: N=26 compute median ms 2262
+native: rows 26, found==min(N,26) in 26 of 26
+native: per-N median overhead ms min 0.30 max 1.30 median 0.72
+native: slowest single call 2.2 s at N=26
+native: N=26 compute median ms 2148
+== gap-20261103-native-0ms.json: idle gap before each call 0.0 s
+N=18 compute median ms 18.75
+N=19 compute median ms 18.01
+N=20 compute median ms 26.07
+N=21 compute median ms 99.85
+N=22 compute median ms 180.67
+== gap-20261103-native-1300ms.json: idle gap before each call 1.3 s
+N=18 compute median ms 24.60
+N=19 compute median ms 46.74
+N=20 compute median ms 68.09
+N=21 compute median ms 188.67
+N=22 compute median ms 269.20
