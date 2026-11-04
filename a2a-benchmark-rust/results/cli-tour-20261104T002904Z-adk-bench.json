@@ -1,0 +1,203 @@
+{
+  "task": {
+    "id": "64604520-4fc6-49fc-a97f-7bdc5aa8b835",
+    "artifacts": [
+      {
+        "artifactId": "6412db51-1201-4917-9d6f-906467f36760",
+        "parts": [
+          {
+            "text": "### Arguments Used\n- `min_n`: 3\n- `max_n`: 6\n- `reps`: 2\n\n---\n\n### Summary\n\n#### Native Agent (`native`)\n- **Calls**: 8\n- **Largest N**: 6\n- **Largest N Found**: 6\n- **Largest N Compute Median (ms)**: 0.003903\n- **Largest N RTT Median (ms)**: 0.631\n- **Overhead Median Min (ms)**: 0.508\n- **Overhead Median Max (ms)**: 0.733\n\n#### Exec Agent (`exec`)\n- **Calls**: 8\n- **Largest N**: 6\n- **Largest N Found**: 6\n- **Largest N Compute Median (ms)**: 0.01035\n- **Largest N RTT Median (ms)**: 5.011\n- **Overhead Median Min (ms)**: 4.557\n- **Overhead Median Max (ms)**: 5.001\n\n---\n\n### Rows\n\n| Agent | N | Found | Compute Median (ms) | Overhead Median (ms) | RTT Median (ms) |\n|---|---|---|---|---|---|\n| native | 3 | 3 | 0.007234 | 0.625 | 0.633 |\n| native | 4 | 4 | 0.003313 | 0.733 | 0.736 |\n| native | 5 | 5 | 0.004746 | 0.508 | 0.513 |\n| native | 6 | 6 | 0.003903 | 0.627 | 0.631 |\n| exec | 3 | 3 | 0.006596 | 4.609 | 4.616 |\n| exec | 4 | 4 | 0.00551 | 4.557 | 4.563 |\n| exec | 5 | 5 | 0.007105 | 4.751 | 4.758 |\n| exec | 6 | 6 | 0.01035 | 5.001 | 5.011 |"
+          }
+        ]
+      }
+    ],
+    "contextId": "14173ec1-e2c0-47a2-86b6-bdc57d63e14d",
+    "history": [
+      {
+        "messageId": "01a1a3f5-b083-7f41-919c-edb998345386",
+        "contextId": "14173ec1-e2c0-47a2-86b6-bdc57d63e14d",
+        "parts": [
+          {
+            "text": "Benchmark both agents for N=3 to 6 with 2 reps"
+          }
+        ],
+        "role": "ROLE_USER",
+        "taskId": "64604520-4fc6-49fc-a97f-7bdc5aa8b835"
+      },
+      {
+        "messageId": "9865f8f5-82b5-4816-8813-775fe318c3bf",
+        "parts": [
+          {
+            "data": {
+              "args": {
+                "max_n": 6,
+                "min_n": 3,
+                "reps": 2
+              },
+              "id": "call_1518178",
+              "name": "run_benchmark"
+            },
+            "metadata": {
+              "adk_thought_signature": "AY89a18LYGhJuTgoCOUIViN1lf/+bCnjBM54GRdrrNgzlVi2MCrf0YSvPAxdJIflQS9GBOVy4Zmef4kcIz77Fp6JKL/Xrz26KbUWml/ZQoTZ8tr7WlUA+W6B01vE9BS4RyRjTasJz6DKKZSUmHiDAskX/C0R42YRpJ2VW8JiBCuVXTRTHc4NDsCqlo9uh7qdQ5Uu00OfVgZX8JdGmlvg5pdSCBKczg/AOlvTzTUCi8AGtO12gEcENO1HZ9ad3y8h/75n/3CiajCTfDNsePb/dWGPSKmb7qx8Ho4oyQXMX3NtOaT0CtC8ah/FMxKZT5dJlD4AjbItRU3YJewxVY3aRJMBXKWQxta3v4Iaoc6qBt3YG5h7M9vJv5jescsz/uhWtKfFE2I3mm4=",
+              "adk_type": "function_call"
+            }
+          }
+        ],
+        "role": "ROLE_AGENT"
+      },
+      {
+        "messageId": "14281251-be50-4238-b514-a4bef3859e5c",
+        "parts": [
+          {
+            "data": {
+              "id": "call_1518178",
+              "name": "run_benchmark",
+              "response": {
+                "rows": [
+                  {
+                    "agent": "native",
+                    "compute_ms_median": 0.007234,
+                    "found": 3,
+                    "n": 3,
+                    "overhead_ms_median": 0.625,
+                    "rtt_ms_median": 0.633
+                  },
+                  {
+                    "agent": "native",
+                    "compute_ms_median": 0.003313,
+                    "found": 4,
+                    "n": 4,
+                    "overhead_ms_median": 0.733,
+                    "rtt_ms_median": 0.736
+                  },
+                  {
+                    "agent": "native",
+                    "compute_ms_median": 0.004746,
+                    "found": 5,
+                    "n": 5,
+                    "overhead_ms_median": 0.508,
+                    "rtt_ms_median": 0.513
+                  },
+                  {
+                    "agent": "native",
+                    "compute_ms_median": 0.003903,
+                    "found": 6,
+                    "n": 6,
+                    "overhead_ms_median": 0.627,
+                    "rtt_ms_median": 0.631
+                  },
+                  {
+                    "agent": "exec",
+                    "compute_ms_median": 0.006596,
+                    "found": 3,
+                    "n": 3,
+                    "overhead_ms_median": 4.609,
+                    "rtt_ms_median": 4.616
+                  },
+                  {
+                    "agent": "exec",
+                    "compute_ms_median": 0.00551,
+                    "found": 4,
+                    "n": 4,
+                    "overhead_ms_median": 4.557,
+                    "rtt_ms_median": 4.563
+                  },
+                  {
+                    "agent": "exec",
+                    "compute_ms_median": 0.007105,
+                    "found": 5,
+                    "n": 5,
+                    "overhead_ms_median": 4.751,
+                    "rtt_ms_median": 4.758
+                  },
+                  {
+                    "agent": "exec",
+                    "compute_ms_median": 0.01035,
+                    "found": 6,
+                    "n": 6,
+                    "overhead_ms_median": 5.001,
+                    "rtt_ms_median": 5.011
+                  }
+                ],
+                "summary": {
+                  "exec": {
+                    "calls": 8,
+                    "largest_n": 6,
+                    "largest_n_compute_ms_median": 0.01035,
+                    "largest_n_found": 6,
+                    "largest_n_rtt_ms_median": 5.011,
+                    "overhead_ms_median_max": 5.001,
+                    "overhead_ms_median_min": 4.557
+                  },
+                  "native": {
+                    "calls": 8,
+                    "largest_n": 6,
+                    "largest_n_compute_ms_median": 0.003903,
+                    "largest_n_found": 6,
+                    "largest_n_rtt_ms_median": 0.631,
+                    "overhead_ms_median_max": 0.733,
+                    "overhead_ms_median_min": 0.508
+                  }
+                },
+                "used": {
+                  "max_n": 6,
+                  "min_n": 3,
+                  "reps": 2
+                }
+              }
+            },
+            "metadata": {
+              "adk_type": "function_response"
+            }
+          }
+        ],
+        "role": "ROLE_AGENT"
+      },
+      {
+        "messageId": "397ff342-f386-4c40-b731-eeef0c47c0cf",
+        "parts": [
+          {
+            "text": "### Arguments Used\n- `min_n`: 3\n- `max_n`: 6\n- `reps`: 2\n\n---\n\n### Summary\n\n#### Native Agent (`native`)\n- **Calls**: 8\n- **Largest N**: 6\n- **Largest N Found**: 6\n- **Largest N Compute Median (ms)**: 0.003903\n- **Largest N RTT Median (ms)**: 0.631\n- **Overhead Median Min (ms)**: 0.508\n- **Overhead Median Max (ms)**: 0.733\n\n#### Exec Agent (`exec`)\n- **Calls**: 8\n- **Largest N**: 6\n- **Largest N Found**: 6\n- **Largest N Compute Median (ms)**: 0.01035\n- **Largest N RTT Median (ms)**: 5.011\n- **Overhead Median Min (ms)**: 4.557\n- **Overhead Median Max (ms)**: 5.001\n\n---\n\n### Rows\n\n| Agent | N | Found | Compute Median (ms) | Overhead Median (ms) | RTT Median (ms) |\n|---|---|---|---|---|---|\n| native | 3 | 3 | 0.007234 | 0.625 | 0.633 |\n| native | 4 | 4 | 0.003313 | 0.733 | 0.736 |\n| native | 5 | 5 | 0.004746 | 0.508 | 0.513 |\n| native | 6 | 6 | 0.003903 | 0.627 | 0.631 |\n| exec | 3 | 3 | 0.006596 | 4.609 | 4.616 |\n| exec | 4 | 4 | 0.00551 | 4.557 | 4.563 |\n| exec | 5 | 5 | 0.007105 | 4.751 | 4.758 |\n| exec | 6 | 6 | 0.01035 | 5.001 | 5.011 |"
+          }
+        ],
+        "role": "ROLE_AGENT"
+      }
+    ],
+    "metadata": {
+      "adk_actions": {
+        "artifactDelta": {},
+        "requestedAuthConfigs": {},
+        "requestedToolConfirmations": {},
+        "stateDelta": {}
+      },
+      "adk_app_name": "rust_bench",
+      "adk_author": "rust_bench",
+      "adk_event_id": "adc42a1b-75fd-47bf-90f3-7967789abf67",
+      "adk_invocation_id": "e-2b211709-0354-4274-808c-a0fca4b50c86",
+      "adk_session_id": "14173ec1-e2c0-47a2-86b6-bdc57d63e14d",
+      "adk_usage_metadata": {
+        "candidatesTokenCount": 549,
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 549
+          }
+        ],
+        "promptTokenCount": 1276,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1276
+          }
+        ],
+        "totalTokenCount": 1825,
+        "trafficType": "ON_DEMAND"
+      },
+      "adk_user_id": "A2A_USER_14173ec1-e2c0-47a2-86b6-bdc57d63e14d"
+    },
+    "status": {
+      "state": "TASK_STATE_COMPLETED",
+      "timestamp": "2026-11-04T00:29:16.3759Z"
+    }
+  }
+}

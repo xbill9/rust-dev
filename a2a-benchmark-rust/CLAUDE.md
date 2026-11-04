@@ -21,3 +21,5 @@ Rust A2A v1.0 Mersenne prime agents + benchmark. See README.md.
 - Compare compute times only between equally paced runs: idle gaps between calls slow large-N compute (`--gap-ms`, `results/gap-*.json`).
 - `start-all.sh` stops only the Rust agents (`stop-all.sh --rust-only`); `stop-all.sh` with no flag also stops ADK.
 - Never put a `pkill -f` pattern from `stop-all.sh`/`start-adk.sh` (`a2a server --exec`, `adk api_server --a2a --port 8106`) in an inline shell command, even inside a heredoc or sed: it matches the shell itself and kills it. Run the scripts in their own command.
+- `scripts/cli-bench.py` times the `a2a` CLI itself (one process per call, same report checks); `scripts/cli-transport.py` interleaves cases at N=1. Compare agents through the CLI only from interleaved runs: block order drifts by a few ms.
+- `scripts/summarize-results.py` computes the aggregates the dev.to article (`docs/a2a-cli-rust/`) quotes; `docs/a2a-cli-rust/evidence/` links the cited result files for the publishing kit's `check-facts.py`.

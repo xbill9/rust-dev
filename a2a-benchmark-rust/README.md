@@ -167,6 +167,19 @@ Native agent called directly, with and without a 1.3 s idle gap before each call
 - ⚠️ Spacing between calls slows mid-range compute. The same native process takes 68.09 ms at N=20 when calls arrive 1.3 s apart, against 26.07 ms back to back, which matches the exec and ADK series. By N=25 the gap closes (native 1625, exec 1625). Compare compute times only between runs paced the same way. The CPU-level cause (clock scaling or core placement on this hybrid CPU) is untested.
 - 🟢 Routing and quoting (`scripts/adk-reliability.sh`): 10 of 10 checked ADK benchmark requests (varied ranges and reps) sent the requested arguments and quoted only tool values, and 10 of 10 unnamed "Calculate the first N" requests went to `native_rust_agent`, on both `gemini-3.5-flash` and `gemini-3.8-flash`. The 3.8-flash run is `results/adk-reliability-20261103T213852Z.json`.
 
+The A2A CLI as the client (`scripts/cli-bench.py`, one `a2a send -o json` process per call, N=1..26, 5 reps direct and 3 through ADK on `gemini-3.8-flash`; `results/cli-bench-20261104T002328Z.md`):
+
+| | median ms |
+|---|---:|
+| `a2a version` (process start only) | 7.17 |
+| `a2a card get` native | 9.18 |
+| `a2a send` overhead, native, median of per-N medians | 20.28 |
+| `a2a send` overhead, exec, median of per-N medians | 17.51 |
+| `a2a send` overhead, ADK, median of per-N medians | 2217.55 |
+
+- ⚠️ The sweep times each agent in its own block. Interleaved at N=1, 30 runs each (`scripts/cli-transport.py`, `results/cli-transport-20261104T002823Z.txt`): native JSON-RPC 20.74, native REST 21.49, exec 20.81, `a2a version` 7.62 ms. From a shell the serving path makes no difference; time agents with `mersenne-bench`.
+- ⚠️ CLI overhead drops to about 11 ms for N >= 21 (compute above 100 ms) on both agents. Cause untested.
+
 #### The nine bugs from `a2a-benchmark`, checked here
 
 The original suite's [nine bugs](https://dev.to/gde/why-did-my-benchmark-stop-at-n22-a-debugging-story-in-nine-bugs-3m2l) and where each one stands in this rig:

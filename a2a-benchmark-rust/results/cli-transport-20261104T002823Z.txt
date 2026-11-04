@@ -1,0 +1,5 @@
+# a2a send wall time by transport, N=1, 30 reps each, interleaved (20261104T002823Z)
+native, default (JSON-RPC): median 20.74 ms, min 18.60, max 26.51
+native, --transport rest: median 21.49 ms, min 19.63, max 26.15
+exec (HTTP+JSON only): median 20.81 ms, min 18.67, max 28.07
+a2a version: median 7.62 ms, min 6.07, max 10.71
