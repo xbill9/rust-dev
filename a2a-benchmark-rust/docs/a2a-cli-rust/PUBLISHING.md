@@ -6,6 +6,7 @@
 | Medium | published 2026-11-04, no paywall, 240 subscribers notified | https://xbill999.medium.com/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-6f06bcf76f68 (id 6f06bcf76f68; (135 blocks, 21 headings, 26 code blocks, 9 images, checked from `?format=json`) |
 | Substack | published 2026-11-04 01:15 UTC, emailed | https://xbill9.substack.com/p/the-a2a-cli-and-rust-the-same-code (post 223410921; (21 headings, 26 code blocks, 9 images, 9 links, checked with `ss.audit()`) |
 | LinkedIn | posted 2026-11-04 with the cover | https://www.linkedin.com/feed/update/urn:li:activity:7523554207636013056/ (`linkedin-devto-a2a-cli-rust.txt`, template `linkedin.template.txt`) |
+| Advocu (GDE) | submitted 2026-11-04 | Content creation / Articles, tag AI - Agent Development Kit (ADK), reach 3000 (standing estimate), date 2026-11-04, WebP cover; My activities 374 -> 375 (`advocu-devto-a2a-cli-rust.md`) |
 
 Kit: `~/publishing-kit/skills/publishing/scripts/`.
 
