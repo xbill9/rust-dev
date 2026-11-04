@@ -1,4 +1,4 @@
-devto_gde = https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
+devto-gde = https://dev.to/gde/the-a2a-cli-and-rust-the-same-code-three-ways-to-serve-it-4el0
 repo = https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust
 medium = PENDING
 substack = PENDING
