@@ -1,10 +1,10 @@
 # Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
 # run on purpose: a post whose links do not resolve is worse than no post.
-# dev.to 4983339, Medium 4b220d778b33 and Substack 223663994 published 2026-11-05.
+# dev.to 4983339, Medium 4b220d778b33 and Substack 223663994 and Builder Center 3LhRgOSkTc8n2rMhcyO9J8g4M8F published 2026-11-05.
 devto-aws  = https://dev.to/aws-builders/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-o69
 devto-gde  = SKIP
 medium     = https://medium.com/@xbill999/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-4b220d778b33
 substack   = https://xbill9.substack.com/p/the-a2a-cli-on-aws-one-client-for
-builder    = PENDING
+builder    = https://builder.aws.com/content/3LhRgOSkTc8n2rMhcyO9J8g4M8F/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost
 linkedin   = PENDING
 repo       = https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws
