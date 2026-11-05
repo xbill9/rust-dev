@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.11" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The A2A CLI on AWS: One Client for Lightsail, Bedrock AgentCore and Localhost</title>
+  <meta name="description" content="A Rust A2A v1.0 agent on Amazon Lightsail and a Strands A2A v0.3 coordinator on Bedrock AgentCore Runtime, driven by the same A2A CLI commands as their localhost copies, with the CLI also carrying the agent-to-agent call between them." />
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    body{font-family:-apple-system,'Segoe UI',Roboto,'Liberation Sans',Arial,sans-serif;
+         font-size:18px;line-height:1.58;max-width:42em;color:#242424;}
+    h1,h2,h3,h4{font-weight:700;line-height:1.25;margin-top:1.8em;}
+    h4{font-size:1.25em;}
+    img{max-width:100%;height:auto;display:block;margin:1.6em 0;}
+    pre{background:#f7f7f7;border:1px solid #e6e6e6;border-radius:4px;
+        padding:12px 14px;overflow-x:auto;font-size:14px;line-height:1.45;}
+    code{font-family:'Liberation Mono',Menlo,Consolas,monospace;}
+    :not(pre)>code{background:#f2f2f2;padding:1px 5px;border-radius:3px;font-size:.9em;}
+    blockquote{border-left:3px solid #ddd;margin-left:0;padding-left:1em;color:#555;}
+    hr{border:0;border-top:1px solid #e6e6e6;margin:2.4em 0;}
+  </style>
+</head>
+<body>
+<p>This article provides a step by step guide to running A2A agents on
+AWS and driving them with the A2A CLI. A Rust agent on the official A2A
+Rust SDK runs in an Amazon Lightsail container. A Strands agent on an
+Amazon Bedrock model runs in Amazon Bedrock AgentCore Runtime and hands
+its work to the Rust agent. Both also run on a laptop, and one set of
+<code>a2a</code> commands checks all four.</p>
+<figure><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-strands-aws/docs/a2a-cli-aws/medium/img/devto-cover.69a65719.jpg" alt="The A2A CLI on AWS: One Client for Lightsail, Bedrock AgentCore and Localhost" /></figure>
+<p><a
+href="https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws">https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws</a></p>
+<p><strong>The A2A CLI drove all four endpoints with the same commands,
+16 of 16 checks passed, and the CLI also carried the call from the
+Strands agent to the Rust agent.</strong> The two agents speak different
+protocol versions: the Rust SDK serves A2A 1.0 and Strands serves A2A
+0.3. The CLI reads both. Strands' own Python client reads only 0.3, so
+the Strands agent calls the Rust agent by running the same
+<code>a2a</code> binary the laptop uses. On AWS the CLI needs a login
+token, a session header and the full agent card URL, and nothing else
+changes.</p>
+<hr />
+<h4 id="what-is-being-built">What Is Being Built?</h4>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-strands-aws/docs/a2a-cli-aws/medium/img/devto-a2a-cli-aws-table-1.png"
+alt="Table: Agent, Where it runs, A2A, Model" /></p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-strands-aws/docs/a2a-cli-aws/medium/img/devto-a2a-cli-aws-diagram-1.png" alt="diagram" /></p>
+<p>The workload is the one from the sibling rig: a Lucas-Lehmer test
+over the first N known Mersenne prime exponents, timed by the agent
+itself. Every reply carries the line
+<code>Found first N Mersenne primes in X ms.</code> and a data part with
+<code>requested</code>, <code>found</code> and
+<code>elapsed_ms</code>.</p>
+<p>Versions, read from the machine on 2026-11-05:</p>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-strands-aws/docs/a2a-cli-aws/medium/img/devto-a2a-cli-aws-table-2.png"
+alt="Table: Component, Version" /></p>
+<hr />
+<h4 id="at-this-point-you-should-have">At This Point You Should
+Have…</h4>
+<ul>
+<li>The A2A CLI on your <code>PATH</code> as <code>a2a</code>:
+<code>go install github.com/a2aproject/a2a-cli@latest</code>, then
+rename <code>a2a-cli</code> to <code>a2a</code></li>
+<li>Rust, Go, Docker and Python 3 with
+<code>pip install "strands-agents[a2a]" "bedrock-agentcore[a2a]"</code></li>
+<li>AWS credentials with Bedrock model access in us-east-1, and the
+<code>lightsailctl</code> plugin for the AWS CLI</li>
+</ul>
+<pre class="shell"><code>a2a version
+a2a v0.3.1
+commit:  none
+built:   unknown
+go:      go1.26.3
+os/arch: linux/amd64</code></pre>
+<hr />
+<h4 id="step-1--run-both-agents-on-the-laptop">Step 1 — Run Both Agents
+on the Laptop</h4>
+<pre class="shell"><code>git clone https://github.com/xbill9/rust-dev &amp;&amp; cd rust-dev/a2a-strands-aws
+scripts/start-local.sh
+up: 8204 rust agent, 8209 strands coordinator -&gt; http://localhost:8204</code></pre>
+<p>The coordinator is a Strands <code>Agent</code> with one tool, served
+over A2A by the AgentCore SDK's <code>serve_a2a</code>. The same file
+runs on the laptop and in AgentCore:</p>
+<pre class="python"><code>def create_agent(_context_id: str) -&gt; Agent:
+    return Agent(
+        name=&quot;Strands Mersenne Coordinator&quot;,
+        model=BedrockModel(model_id=MODEL_ID),
+        system_prompt=SYSTEM_PROMPT,
+        tools=[find_mersenne_primes],
+        callback_handler=None,
+    )
+ 
+serve_a2a(StrandsA2AExecutor(agent_factory=create_agent), agent_card(), port=port)</code></pre>
+<p>The CLI reads both cards and shows each one's protocol version:</p>
+<pre class="shell"><code>a2a card get -a http://localhost:8204
+a2a card get -a http://localhost:8209
+Name:         Mersenne Prime Agent Rust
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8204/jsonrpc
+  HTTP+JSON (A2A v1.0)   http://localhost:8204/rest
+Name:         Strands Mersenne Coordinator
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   http://localhost:8209/
+Streaming:    true</code></pre>
+<hr />
+<h4 id="step-2--why-the-strands-tool-calls-the-a2a-cli">Step 2 — Why the
+Strands Tool Calls the A2A CLI</h4>
+<p>Strands pins <code>a2a-sdk</code> below 0.4, so its A2A client and
+server speak protocol 0.3. An A2A 1.0 card lists its endpoints under
+<code>supportedInterfaces</code> and drops the top-level
+<code>url</code> field that a 0.3 card requires.
+<code>scripts/check-sdk03-card.py</code> fetches each card with the 0.3
+client:</p>
+<pre class="shell"><code>scripts/check-sdk03-card.py http://localhost:8204
+scripts/check-sdk03-card.py http://localhost:8209
+a2a-sdk 0.3.26, card from http://localhost:8204
+A2AClientJSONError: JSON Error: Failed to validate agent card structure from http://localhost:8204/.well-known/agent-card.json: [{&quot;type&quot;:&quot;missing&quot;,&quot;loc&quot;:[&quot;url&quot;],&quot;msg&quot;:&quot;Field required&quot;, ...
+a2a-sdk 0.3.26, card from http://localhost:8209
+ok: Strands Mersenne Coordinator, protocolVersion 0.3.0, url http://localhost:8209/</code></pre>
+<p>The A2A CLI reads both, so the tool runs it with JSON output and a
+data part, then reads the Rust agent's structured report:</p>
+<pre class="python"><code>cmd = [
+    A2A_BIN, &quot;send&quot;, &quot;-a&quot;, RUST_AGENT_URL, &quot;-o&quot;, &quot;json&quot;, &quot;--timeout&quot;, &quot;60s&quot;,
+    &quot;--data-part&quot;, json.dumps({&quot;count&quot;: count}),
+]
+proc = subprocess.run(cmd, capture_output=True, text=True, timeout=90)</code></pre>
+<p>The tool refuses a reply whose <code>requested</code> or
+<code>found</code> differs from the count the model asked for, and the
+system prompt tells the model to quote the agent's own reply line. The
+model picks N; the Rust agent does the counting and the timing.</p>
+<pre class="shell"><code>a2a send -a http://localhost:8209 &quot;Find the first 9 Mersenne primes&quot;
+Artifacts:
+  [agent_response] Found first 9 Mersenne primes in 0.0298ms.
+ 
+Exponents: 2, 3, 5, 7, 13, 17, 19, 31, 61</code></pre>
+<hr />
+<h4 id="step-3--the-rust-agent-on-lightsail">Step 3 — The Rust Agent on
+Lightsail</h4>
+<p><code>scripts/deploy-lightsail.py</code> creates a nano container
+service, builds <code>docker/agent.Dockerfile</code>, pushes it with
+<code>aws lightsail push-container-image</code> and deploys it with
+<code>ADVERTISE_URL</code> set to the service's own HTTPS address, so
+the card's interfaces point at Lightsail. The health check is the agent
+card path.</p>
+<pre class="shell"><code>scripts/deploy-lightsail.py
+creating container service a2a-rust-mersenne (nano, scale 1)
+$ docker build --platform linux/amd64 -f docker/agent.Dockerfile -t a2a-rust-mersenne:local /home/xbill/rust-dev/a2a-strands-aws
+$ aws lightsail push-container-image --region us-east-1 --service-name a2a-rust-mersenne --label agent --image a2a-rust-mersenne:local
+pushed :a2a-rust-mersenne.agent.222
+✅ https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/.well-known/agent-card.json</code></pre>
+<p>The commands are the laptop's, with the Lightsail address:</p>
+<pre class="shell"><code>scripts/test-cli.sh lightsail
+== lightsail rust agent (https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com)
+Interfaces:
+  JSONRPC (A2A v1.0)     https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/jsonrpc
+  HTTP+JSON (A2A v1.0)   https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/rest
+✅ lightsail card (A2A v1.0)
+✅ lightsail send
+✅ lightsail stream
+✅ lightsail rest
+✅ lightsail data-part</code></pre>
+<hr />
+<h4 id="step-4--an-arm64-image-built-on-an-x86-laptop">Step 4 — An arm64
+Image Built on an x86 Laptop</h4>
+<p>AgentCore Runtime runs arm64 containers, serves A2A on port 9000, and
+expects the card at <code>/.well-known/agent-card.json</code> and a
+health answer at <code>/ping</code>. <code>serve_a2a</code> provides all
+three. The image has to be arm64, and this laptop has no arm64 emulator,
+so <code>scripts/build-coordinator.sh</code> assembles it from parts
+that are already built for arm64:</p>
+<ul>
+<li>pip downloads aarch64 wheels:
+<code>--platform manylinux_2_28_aarch64 --python-version 3.13 --only-binary=:all:</code></li>
+<li>Go cross-compiles the A2A CLI:
+<code>GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build</code></li>
+<li>the Dockerfile only copies, so Docker never runs an arm64
+binary</li>
+</ul>
+<pre class="dockerfile"><code>FROM python:3.13-slim-trixie
+COPY build/coordinator/site /opt/site
+COPY build/coordinator/a2a /usr/local/bin/a2a
+COPY coordinator/main.py /app/main.py
+ENV PYTHONPATH=/opt/site PYTHONUNBUFFERED=1 DOCKER_CONTAINER=1 A2A_PORT=9000
+WORKDIR /app
+EXPOSE 9000
+CMD [&quot;python&quot;, &quot;main.py&quot;]
+file build/coordinator/a2a
+docker image inspect a2a-strands-coordinator:local --format &#39;{{.Os}}/{{.Architecture}}&#39;
+build/coordinator/a2a: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, Go BuildID
+linux/arm64</code></pre>
+<p><code>ARCH=amd64 scripts/build-coordinator.sh</code> builds the same
+image for x86, which runs on the laptop and checks the image layout
+before AgentCore sees it.</p>
+<hr />
+<h4 id="step-5--the-strands-agent-on-bedrock-agentcore-runtime">Step 5 —
+The Strands Agent on Bedrock AgentCore Runtime</h4>
+<p><code>scripts/deploy-agentcore.py</code> pushes the image to ECR and
+creates an IAM role with ECR pull, CloudWatch Logs and
+<code>bedrock:InvokeModel*</code>. It creates a Cognito user pool with
+one app client and one user, and an AgentCore runtime with
+<code>serverProtocol: A2A</code>, a <code>customJWTAuthorizer</code> on
+that pool, public networking, and <code>RUST_AGENT_URL</code> set to the
+Lightsail agent. A second update sets <code>AGENTCORE_RUNTIME_URL</code>
+once the runtime's ARN exists, so the card advertises the AgentCore
+address.</p>
+<pre class="shell"><code>scripts/deploy-agentcore.py
+  runtime CREATING (version 1)
+  runtime READY (version 1)
+  runtime UPDATING (version 2)
+  runtime READY (version 2)
+✅ https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/</code></pre>
+<p>From the CLI, AgentCore takes a bearer token from Cognito and a
+session id header of at least 33 characters:</p>
+<pre class="shell"><code>CARD=$(scripts/aws_state.py get agentcore_card)
+TOKEN=$(scripts/cognito-token.py)
+SID=&quot;a2a-cli-$(cat /proc/sys/kernel/random/uuid)&quot;
+a2a --auth &quot;Bearer $TOKEN&quot; --svc-param &quot;X-Amzn-Bedrock-AgentCore-Runtime-Session-Id=$SID&quot; card get -a &quot;$CARD&quot;
+Name:         Strands Mersenne Coordinator
+Description:  Strands agent on Amazon Bedrock (A2A 0.3) that delegates Mersenne prime runs to a Rust A2A 1.0 agent through the a2a CLI.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations
+Streaming:    true
+Skills:
+  mersenne-via-rust    Mersenne primes via the Rust agent</code></pre>
+<hr />
+<h4 id="mag_right-tip-give-the-cli-the-full-card-url-for-agentcore">🔎
+Tip: Give the CLI the Full Card URL for AgentCore</h4>
+<p>The CLI reads a URL with no card path as a host, and asks that host's
+origin for <code>/.well-known/agent-card.json</code>. For AgentCore the
+origin is
+<code>https://bedrock-agentcore.us-east-1.amazonaws.com</code>, which
+answers 404:</p>
+<pre class="text"><code>$ a2a --auth &quot;Bearer $TOKEN&quot; --svc-param &quot;X-Amzn-Bedrock-AgentCore-Runtime-Session-Id=$SID&quot; card get -a &quot;https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3A...%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/&quot;
+Error: failed to resolve agent card: card request failed, status: 404 Not Found
+hint: check the --agent-card reference (host, full card URL, or local file path)</code></pre>
+<p>Append <code>.well-known/agent-card.json</code> to the invocations
+URL and the same command returns the card. The deploy script stores that
+URL as <code>agentcore_card</code>.</p>
+<hr />
+<h4 id="step-6--the-same-checks-on-all-four-endpoints">Step 6 — The Same
+Checks on All Four Endpoints</h4>
+<p><code>scripts/test-cli.sh all</code> starts the laptop agents and
+runs one set of checks against each endpoint. Each Rust agent gets card
+(A2A v1.0), send, stream, REST and a data part. Each coordinator gets
+card (A2A v0.3), send and stream. Every check looks for the agent's
+reply line with the right N.</p>
+<pre class="shell"><code>scripts/test-cli.sh all
+== local rust agent (http://localhost:8204)
+✅ local card (A2A v1.0)
+✅ local send
+✅ local stream
+✅ local rest
+✅ local data-part
+== local strands coordinator (http://localhost:8209)
+✅ local card (A2A v0.3)
+✅ local send
+✅ local stream
+== lightsail rust agent (https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com)
+✅ lightsail card (A2A v1.0)
+✅ lightsail send
+✅ lightsail stream
+✅ lightsail rest
+✅ lightsail data-part
+== agentcore strands coordinator (https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3A...%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/.well-known/agent-card.json)
+✅ agentcore card (A2A v0.3)
+✅ agentcore send
+✅ agentcore stream</code></pre>
+<p>The AgentCore checks ask for 7 and 11 primes. Both requests reached
+Lightsail, through the CLI inside the AgentCore container. The Lightsail
+container log shows them:</p>
+<pre class="text"><code>INFO mersenne_agent: computed requested=7 found=7 elapsed_ms=0.005935
+INFO mersenne_agent: computed requested=11 found=11 elapsed_ms=0.056663000000000005</code></pre>
+<hr />
+<h4 id="step-7--timing-the-same-command-on-each-platform">Step 7 —
+Timing the Same Command on Each Platform</h4>
+<p><code>scripts/cli-bench.py</code> starts one <code>a2a</code> process
+per call and times it, so wall time includes starting the CLI, fetching
+the card, TLS on AWS and the reply. Targets take turns, one call each
+per round, so drift during the run lands on every target alike. Every
+reply is checked, and the statistics come from the script
+(<code>results/summary-20261105.txt</code>). N=10 throughout.</p>
+<pre class="shell"><code>scripts/cli-bench.py --targets local-rust,lightsail-rust --reps 20 --n 10
+local-rust               ok 20/20  wall median 27.7 ms (min 24.1, max 35.1)  compute median 0.05682 ms
+lightsail-rust           ok 20/20  wall median 154.4 ms (min 140.4, max 174.3)  compute median 0.03928 ms
+scripts/cli-bench.py --targets local-coordinator,agentcore-coordinator --reps 5 --n 10
+scripts/cli-bench.py --targets local-coordinator,agentcore-coordinator --reps 5 --n 10 --reuse-session
+local-coordinator        ok 5/5  wall median 2596.2 ms (min 2288.0, max 2662.2)
+agentcore-coordinator    ok 5/5  wall median 3416.5 ms (min 3364.7, max 3482.8)
+local-coordinator        ok 5/5  wall median 2459.9 ms (min 2184.5, max 2683.8)
+agentcore-coordinator    ok 5/5  wall median 2997.1 ms (min 2849.7, max 12177.7)</code></pre>
+<p>The Rust agent's own compute time is a fraction of a millisecond on
+both machines, so the 126.7 ms between the laptop and Lightsail medians
+is the network and TLS. A coordinator call is a Bedrock model call plus
+a nested CLI call to the Rust agent. AgentCore added 820.3 ms over the
+laptop with a new session id per call and 537.2 ms with one session for
+the run. In the one-session run, the first AgentCore call took 12177.7
+ms and the other four stayed near the median.</p>
+<hr />
+<h4 id="step-8--teardown">Step 8 — Teardown</h4>
+<pre class="shell"><code>make teardown
+deleted runtime a2a_strands_coordinator
+deleted user pool a2a-strands-aws
+deleted role a2a-strands-coordinator-runtime
+deleted ECR repository a2a-strands-coordinator
+deleted a2a-rust-mersenne</code></pre>
+<p><code>make deploy</code> recreates both, and
+<code>make test-cli T=all</code> checks them again.</p>
+<hr />
+<h4 id="compare-and-contrast">Compare and Contrast</h4>
+<p><img src="https://raw.githubusercontent.com/xbill9/rust-dev/main/a2a-strands-aws/docs/a2a-cli-aws/medium/img/devto-a2a-cli-aws-table-3.png"
+alt="Table: Endpoint, CLI flags beyond the laptop&#39;s, A2A, Median wall time, N=10" /></p>
+<hr />
+<h4 id="so-which-one">So, Which One?</h4>
+<p>For an agent with no model in it, Lightsail is the short path: one
+container, a public HTTPS address, no client changes. Every call costs
+the network trip, 126.7 ms here, on top of a sub-millisecond
+computation.</p>
+<p>For an agent built around a model, AgentCore Runtime gives it a
+managed home with inbound authentication, and costs the CLI two flags
+and the full card URL. Reuse a session id across calls when a client
+sends many.</p>
+<p>For talking to any of them, the A2A CLI is the one client. It reads
+A2A 1.0 and 0.3 cards, and it fits inside an agent as well as on a
+laptop: the Strands agent reaches a Rust 1.0 agent with the same binary,
+where its own 0.3 client cannot read the card.</p>
+<hr />
+<h4 id="summary">Summary</h4>
+<p>The goal of this article was to show that the A2A CLI drives the same
+agents on a laptop, on Amazon Lightsail and on Amazon Bedrock AgentCore
+Runtime with the same commands. The key to the solution was one set of
+checks run against every endpoint, and a Strands tool that calls the
+Rust agent through the CLI. The results were:</p>
+<ul>
+<li>🟢 16 of 16 CLI checks passed across four endpoints: card, send,
+stream, REST and data parts on the Rust agent, card, send and stream on
+the Strands agent</li>
+<li>🟢 The CLI read A2A 1.0 cards (Rust SDK) and A2A 0.3 cards (Strands)
+with the same commands</li>
+<li>🟢 Inside AgentCore the CLI carried the agent-to-agent call to
+Lightsail, confirmed in the Lightsail log</li>
+<li>🟢 An arm64 AgentCore image built on an x86 laptop with no
+emulator</li>
+<li>⚠️ AgentCore needs <code>--auth</code>, a session id header and the
+full card URL; the invocations URL alone returns 404</li>
+<li>⚠️ Lightsail added 126.7 ms per call over the laptop, AgentCore
+820.3 ms with a new session per call and 537.2 ms with one session</li>
+<li>❌ The <code>a2a-sdk</code> 0.3 Python client that Strands uses
+cannot parse an A2A 1.0 card</li>
+</ul>
+<p>Scope: one laptop (13th Gen Intel Core i7-1360P, Linux), one AWS
+region (us-east-1), one Lightsail power (nano), one model
+(<code>us.anthropic.claude-haiku-5-5</code>), measured on 2026-11-05.
+Timing used N=10 with 20 calls per Rust target and 5 per coordinator
+target, and each coordinator comparison is a single run. Every AWS
+figure includes the trip from the laptop. gRPC, task commands, push
+notifications and load were not tested.</p>
+<p>The strategy for running A2A agents on AWS and driving them with the
+A2A CLI was validated with an incremental step by step approach.</p>
+<hr />
+<h4 id="references">References</h4>
+<ul>
+<li>The rig: <a
+href="https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws">https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws</a></li>
+<li>The sibling rig, the same Rust agent on a laptop: <a
+href="https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust">https://github.com/xbill9/rust-dev/tree/main/a2a-benchmark-rust</a></li>
+<li>CLI check transcript: <a
+href="https://github.com/xbill9/rust-dev/blob/main/a2a-strands-aws/results/test-cli-all-20261105T163653Z.txt">https://github.com/xbill9/rust-dev/blob/main/a2a-strands-aws/results/test-cli-all-20261105T163653Z.txt</a></li>
+<li>Timing summary: <a
+href="https://github.com/xbill9/rust-dev/blob/main/a2a-strands-aws/results/summary-20261105.txt">https://github.com/xbill9/rust-dev/blob/main/a2a-strands-aws/results/summary-20261105.txt</a></li>
+<li>A2A CLI: <a
+href="https://github.com/a2aproject/a2a-cli">https://github.com/a2aproject/a2a-cli</a></li>
+<li>A2A Rust SDK: <a
+href="https://github.com/a2aproject/a2a-rs">https://github.com/a2aproject/a2a-rs</a></li>
+<li>Strands Agents: <a
+href="https://strandsagents.com/">https://strandsagents.com/</a></li>
+<li>Deploy A2A servers in AgentCore Runtime: <a
+href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-a2a.html">https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-a2a.html</a></li>
+<li>A2A protocol contract for AgentCore Runtime: <a
+href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-a2a-protocol-contract.html">https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-a2a-protocol-contract.html</a></li>
+<li>Amazon Lightsail container services: <a
+href="https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-container-services.html">https://docs.aws.amazon.com/lightsail/latest/userguide/amazon-lightsail-container-services.html</a></li>
+</ul>
+</body>
+</html>
