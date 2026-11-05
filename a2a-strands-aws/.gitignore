@@ -1,0 +1,6 @@
+/target
+/logs
+/build
+__pycache__/
+# AWS resource ids and the Cognito test user's password (scripts/aws_state.py)
+/.aws-state.json

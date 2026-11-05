@@ -1,0 +1,4 @@
+strands-agents[a2a]==1.64.0
+bedrock-agentcore[a2a]==1.25.3
+a2a-sdk[http-server]==0.3.26
+boto3==1.43.118

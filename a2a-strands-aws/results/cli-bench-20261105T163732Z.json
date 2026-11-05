@@ -1,0 +1,44 @@
+{
+  "when": "2026-11-05T16:37:32Z",
+  "n": 10,
+  "reps": 20,
+  "a2a": "a2a v0.3.1",
+  "targets": {
+    "local-rust": {
+      "url": "http://localhost:8204",
+      "kind": "rust",
+      "platform": "local",
+      "calls": 20,
+      "ok": 20,
+      "errors": [],
+      "wall_ms": {
+        "median": 27.674633005517535,
+        "min": 24.069615988992155,
+        "max": 35.06964899133891
+      },
+      "compute_ms": {
+        "median": 0.0568175,
+        "min": 0.047659,
+        "max": 0.092794
+      }
+    },
+    "lightsail-rust": {
+      "url": "https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com",
+      "kind": "rust",
+      "platform": "lightsail",
+      "calls": 20,
+      "ok": 20,
+      "errors": [],
+      "wall_ms": {
+        "median": 154.35612048895564,
+        "min": 140.41977198212408,
+        "max": 174.25961198750883
+      },
+      "compute_ms": {
+        "median": 0.039276500000000006,
+        "min": 0.033884000000000004,
+        "max": 0.093068
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+    Finished `release` profile [optimized] target(s) in 0.28s
+up: 8204 rust agent, 8209 strands coordinator -> http://localhost:8204
+== local rust agent (http://localhost:8204)
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8204/jsonrpc
+  HTTP+JSON (A2A v1.0)   http://localhost:8204/rest
+✅ local card (A2A v1.0)
+✅ local send
+✅ local stream
+✅ local rest
+✅ local data-part
+== local strands coordinator (http://localhost:8209)
+Name:         Strands Mersenne Coordinator
+Description:  Strands agent on Amazon Bedrock (A2A 0.3) that delegates Mersenne prime runs to a Rust A2A 1.0 agent through the a2a CLI.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   http://localhost:8209/
+Streaming:    true
+✅ local card (A2A v0.3)
+✅ local send
+✅ local stream
+== lightsail rust agent (https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com)
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/jsonrpc
+  HTTP+JSON (A2A v1.0)   https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/rest
+✅ lightsail card (A2A v1.0)
+✅ lightsail send
+✅ lightsail stream
+✅ lightsail rest
+✅ lightsail data-part
+== agentcore strands coordinator (https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/.well-known/agent-card.json)
+Name:         Strands Mersenne Coordinator
+Description:  Strands agent on Amazon Bedrock (A2A 0.3) that delegates Mersenne prime runs to a Rust A2A 1.0 agent through the a2a CLI.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations
+Streaming:    true
+✅ agentcore card (A2A v0.3)
+✅ agentcore send
+✅ agentcore stream

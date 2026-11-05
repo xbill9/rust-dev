@@ -1,0 +1,37 @@
+{
+  "when": "2026-11-05T16:40:25Z",
+  "n": 10,
+  "reps": 5,
+  "agentcore_session": "new per call",
+  "a2a": "a2a v0.3.1",
+  "targets": {
+    "local-coordinator": {
+      "url": "http://localhost:8209",
+      "kind": "coordinator",
+      "platform": "local",
+      "calls": 5,
+      "ok": 5,
+      "errors": [],
+      "wall_ms": {
+        "median": 2596.207886002958,
+        "min": 2288.0262279941235,
+        "max": 2662.1888779918663
+      },
+      "compute_ms": {}
+    },
+    "agentcore-coordinator": {
+      "url": "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/.well-known/agent-card.json",
+      "kind": "coordinator",
+      "platform": "agentcore",
+      "calls": 5,
+      "ok": 5,
+      "errors": [],
+      "wall_ms": {
+        "median": 3416.542932012817,
+        "min": 3364.7002569923643,
+        "max": 3482.8027250187006
+      },
+      "compute_ms": {}
+    }
+  }
+}
