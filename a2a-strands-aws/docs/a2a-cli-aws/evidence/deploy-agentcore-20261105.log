@@ -1,0 +1,95 @@
+$ /home/xbill/rust-dev/a2a-strands-aws/scripts/build-coordinator.sh 106059658660.dkr.ecr.us-east-1.amazonaws.com/a2a-strands-coordinator:20261105T163436Z
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from coordinator.Dockerfile
+#1 transferring dockerfile: 616B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim-trixie
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 76B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM docker.io/library/python:3.13-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc
+#4 resolve docker.io/library/python:3.13-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 177.56MB 2.9s done
+#5 DONE 2.9s
+
+#4 [1/5] FROM docker.io/library/python:3.13-slim-trixie@sha256:09a17cad02668ae61ece136b4fd36ac3849e14f670ebedb637ea3e15580525bc
+#4 CACHED
+
+#6 [2/5] COPY build/coordinator/site /opt/site
+#6 DONE 1.4s
+
+#7 [3/5] COPY build/coordinator/a2a /usr/local/bin/a2a
+#7 DONE 0.1s
+
+#8 [4/5] COPY coordinator/main.py /app/main.py
+#8 DONE 0.1s
+
+#9 [5/5] WORKDIR /app
+#9 DONE 0.0s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 7.6s done
+#10 exporting manifest sha256:2fb8d223f8b140251419bdca898567db5c9901e78521e2113501f78f1758bf52 done
+#10 exporting config sha256:dbd9b79cbde3309bf8e984ffb7dc0822c91e57040a4aa669ff8c95529345645f done
+#10 exporting attestation manifest sha256:902349991333348eaf2c0504de8c307b241bd577d073e0384fa9e61bec356da2 done
+#10 exporting manifest list sha256:0060ccf0faf0c266b7464ad777d8a083ebd881ef295c36c6c3ff65315e4fb7f3 done
+#10 naming to 106059658660.dkr.ecr.us-east-1.amazonaws.com/a2a-strands-coordinator:20261105T163436Z done
+#10 DONE 7.6s
+built 106059658660.dkr.ecr.us-east-1.amazonaws.com/a2a-strands-coordinator:20261105T163436Z (linux/arm64)
+$ docker login --username AWS --password-stdin https://106059658660.dkr.ecr.us-east-1.amazonaws.com
+
+WARNING! Your credentials are stored unencrypted in '/home/xbill/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+Login Succeeded
+$ docker push 106059658660.dkr.ecr.us-east-1.amazonaws.com/a2a-strands-coordinator:20261105T163436Z
+The push refers to repository [106059658660.dkr.ecr.us-east-1.amazonaws.com/a2a-strands-coordinator]
+0e6702274506: Waiting
+07658c37d400: Waiting
+44136fa355b3: Waiting
+acd43e9bebc3: Waiting
+07658c37d400: Waiting
+44136fa355b3: Waiting
+acd43e9bebc3: Waiting
+0e6702274506: Waiting
+44136fa355b3: Waiting
+acd43e9bebc3: Waiting
+0e6702274506: Waiting
+07658c37d400: Waiting
+07658c37d400: Pushed
+44136fa355b3: Pushed
+174bfd419dd8: Waiting
+42ebab0032b1: Waiting
+90d6900e09fd: Waiting
+06c6706beaad: Waiting
+42ebab0032b1: Pushed
+0e6702274506: Pushed
+6685ffe5f486: Waiting
+6685ffe5f486: Waiting
+4f4fb700ef54: Waiting
+6685ffe5f486: Pushed
+4f4fb700ef54: Waiting
+4f4fb700ef54: Pushed
+06c6706beaad: Pushed
+174bfd419dd8: Pushed
+acd43e9bebc3: Pushed
+90d6900e09fd: Pushed
+20261105T163436Z: digest: sha256:0060ccf0faf0c266b7464ad777d8a083ebd881ef295c36c6c3ff65315e4fb7f3 size: 856
+  retrying create: Role validation failed for 'arn:aws:iam::106059658660:role/a2a-strands-coordinator-runtime'. Please verify that the role
+  runtime CREATING (version 1)
+  runtime READY (version 1)
+  runtime UPDATING (version 2)
+  runtime READY (version 2)
+✅ https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/

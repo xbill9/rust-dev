@@ -1,0 +1,21 @@
+# captured 2026-11-05T16:48:49Z: a2a-sdk 0.3 client vs the a2a CLI on both cards
+$ scripts/check-sdk03-card.py http://localhost:8204
+a2a-sdk 0.3.26, card from http://localhost:8204
+A2AClientJSONError: JSON Error: Failed to validate agent card structure from http://localhost:8204/.well-known/agent-card.json: [{"type":"missing","loc":["url"],"msg":"Field required","input":{"name":"Mersenne Prime Agent Rust","description":"A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.","version":"0.1.0","supportedInter
+$ a2a card get -a http://localhost:8204
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8204/jsonrpc
+  HTTP+JSON (A2A v1.0)   http://localhost:8204/rest
+$ scripts/check-sdk03-card.py http://localhost:8209
+a2a-sdk 0.3.26, card from http://localhost:8209
+ok: Strands Mersenne Coordinator, protocolVersion 0.3.0, url http://localhost:8209/
+$ a2a card get -a http://localhost:8209
+Name:         Strands Mersenne Coordinator
+Description:  Strands agent on Amazon Bedrock (A2A 0.3) that delegates Mersenne prime runs to a Rust A2A 1.0 agent through the a2a CLI.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   http://localhost:8209/
+Streaming:    true

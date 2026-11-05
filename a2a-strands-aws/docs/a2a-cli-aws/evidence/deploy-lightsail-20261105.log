@@ -1,0 +1,20 @@
+creating container service a2a-rust-mersenne (nano, scale 1)
+  waiting for service READY: ('PENDING', None, None)
+  waiting for service READY: ('PENDING', None, None)
+  waiting for service READY: ('PENDING', None, None)
+$ docker build --platform linux/amd64 -f docker/agent.Dockerfile -t a2a-rust-mersenne:local /home/xbill/rust-dev/a2a-strands-aws
+$ aws lightsail push-container-image --region us-east-1 --service-name a2a-rust-mersenne --label agent --image a2a-rust-mersenne:local
+pushed :a2a-rust-mersenne.agent.222
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+  waiting for deployment ACTIVE: ('DEPLOYING', None, 'ACTIVATING')
+✅ https://a2a-rust-mersenne.6wpv8vensby5c.us-east-1.cs.amazonlightsail.com/.well-known/agent-card.json

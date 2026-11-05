@@ -1,0 +1,22 @@
+# captured 2026-11-05T16:51:57Z: local coordinator (8209) -> local Rust agent (8204)
+$ a2a send -a http://localhost:8209 "Find the first 9 Mersenne primes"
+Task:     5e704ca5-7311-4b20-b0e0-29975ae90ea8
+Context:  bb57091c-e4fb-468a-a681-c46225cfed6b
+Status:   completed (2026-11-05T16:51:59Z)
+Artifacts:
+  [agent_response] Found first 9 Mersenne primes in 0.0298ms.
+
+Exponents: 2, 3, 5, 7, 13, 17, 19, 31, 61
+
+History:
+  [user] Find the first 9 Mersenne primes
+  [agent] Found first
+  [agent]  9 Mersenne
+  [agent]  primes in 0.0298
+  [agent] ms.
+
+Exponents
+  [agent] : 2, 3, 
+  [agent] 5, 7, 13,
+  [agent]  17, 19, 31
+  [agent] , 61

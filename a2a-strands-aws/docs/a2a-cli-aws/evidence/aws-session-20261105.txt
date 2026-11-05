@@ -1,0 +1,45 @@
+# Captured 2026-11-05 16:36-16:37 UTC from the deployed rig (us-east-1), before
+# `make teardown`. Output copied verbatim; the resources no longer exist.
+
+## 1. a2a CLI given the runtime's invocations URL (no card path)
+
+$ a2a --auth "Bearer $TOKEN" --svc-param "X-Amzn-Bedrock-AgentCore-Runtime-Session-Id=$SID" card get -a "https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations/"
+Error: failed to resolve agent card: card request failed, status: 404 Not Found
+hint: check the --agent-card reference (host, full card URL, or local file path)
+
+## 2. Same flags, full card URL
+
+$ a2a --auth "Bearer $TOKEN" --svc-param "X-Amzn-Bedrock-AgentCore-Runtime-Session-Id=$SID" card get -a "${U}.well-known/agent-card.json"
+Name:         Strands Mersenne Coordinator
+Description:  Strands agent on Amazon Bedrock (A2A 0.3) that delegates Mersenne prime runs to a Rust A2A 1.0 agent through the a2a CLI.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v0.3.0)   https://bedrock-agentcore.us-east-1.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3Aus-east-1%3A106059658660%3Aruntime%2Fa2a_strands_coordinator-Rtn6xkF0PS/invocations
+Streaming:    true
+Skills:
+  mersenne-via-rust    Mersenne primes via the Rust agent
+
+## 3. Lightsail container log (GetContainerLog, service a2a-rust-mersenne, container agent),
+##    lines containing "computed", ANSI colour codes stripped, the last six of seven
+
+122206Z  INFO mersenne_agent: computed requested=8 found=8 elapsed_ms=0.012459999999999999
+05T16:33:28.316949Z  INFO mersenne_agent: computed requested=4 found=4 elapsed_ms=0.006092
+05T16:33:28.486028Z  INFO mersenne_agent: computed requested=6 found=6 elapsed_ms=0.007521
+82431Z  INFO mersenne_agent: computed requested=7 found=7 elapsed_ms=0.0062840000000000005
+05T16:36:35.333517Z  INFO mersenne_agent: computed requested=7 found=7 elapsed_ms=0.005935
+4247Z  INFO mersenne_agent: computed requested=11 found=11 elapsed_ms=0.056663000000000005
+
+# requested=8/4/6 are the Lightsail checks run from the laptop (stream, rest,
+# data-part). requested=7 and 11 came through AgentCore: the laptop sent
+# "Find the first 7 Mersenne primes" and "first 11 Mersenne primes" to the
+# coordinator, which called Lightsail with the a2a CLI.
+
+## 4. Teardown (make teardown) and a listing afterwards
+
+deleted runtime a2a_strands_coordinator
+deleted user pool a2a-strands-aws
+deleted role a2a-strands-coordinator-runtime
+deleted ECR repository a2a-strands-coordinator
+deleted a2a-rust-mersenne
+# ListAgentRuntimes: a2a_strands_coordinator DELETING; no a2a ECR repositories,
+# no a2a user pools; Lightsail lists only services unrelated to this rig.

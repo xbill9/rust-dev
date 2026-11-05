@@ -1,0 +1,19 @@
+## cli-bench-20261105T163732Z.json: N=10, 20 reps per target, a2a v0.3.1
+local-rust: ok 20/20, wall median 27.7 ms (min 24.1, max 35.1), compute median 0.05682 ms (min 0.04766, max 0.09279)
+lightsail-rust: ok 20/20, wall median 154.4 ms (min 140.4, max 174.3), compute median 0.03928 ms (min 0.03388, max 0.09307)
+
+## cli-bench-20261105T163943Z.json: N=10, 5 reps per target, a2a v0.3.1, AgentCore session reused
+local-coordinator: ok 5/5, wall median 2459.9 ms (min 2184.5, max 2683.8)
+agentcore-coordinator: ok 5/5, wall median 2997.1 ms (min 2849.7, max 12177.7)
+
+## cli-bench-20261105T164025Z.json: N=10, 5 reps per target, a2a v0.3.1, AgentCore session new per call
+local-coordinator: ok 5/5, wall median 2596.2 ms (min 2288.0, max 2662.2)
+agentcore-coordinator: ok 5/5, wall median 3416.5 ms (min 3364.7, max 3482.8)
+
+## Differences of medians (AWS minus localhost, same file)
+lightsail-rust minus local-rust: 126.7 ms
+agentcore-coordinator [new per call] minus local-coordinator [new per call]: 820.3 ms
+agentcore-coordinator [reused] minus local-coordinator [reused]: 537.2 ms
+
+## CLI checks (results/test-cli-all-*.txt)
+test-cli-all-20261105T163653Z.txt: 16 of 16 checks passed across 4 endpoints
