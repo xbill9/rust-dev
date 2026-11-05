@@ -1,0 +1,10 @@
+# Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
+# run on purpose: a post whose links do not resolve is worse than no post.
+# dev.to draft 4983339 created 2026-11-05 under aws-builders; nothing published yet.
+devto-aws  = PENDING
+devto-gde  = SKIP
+medium     = PENDING
+substack   = PENDING
+builder    = PENDING
+linkedin   = PENDING
+repo       = https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws
