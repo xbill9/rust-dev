@@ -1,0 +1,20 @@
+A Rust A2A 1.0 agent on Amazon Lightsail and a Strands A2A 0.3 agent on Amazon Bedrock AgentCore Runtime, plus localhost copies of both.
+The same a2a CLI commands checked all four endpoints, 16 of 16 passed, and the Strands agent reaches the Rust agent by running that same CLI.
+On AWS the only additions are a login token, a session header and the full agent card URL.
+
+Builder Center Article is here:
+https://builder.aws.com/content/3LhRgOSkTc8n2rMhcyO9J8g4M8F/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost
+
+Medium is here:
+https://medium.com/@xbill999/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-4b220d778b33
+
+Substack is here:
+https://xbill9.substack.com/p/the-a2a-cli-on-aws-one-client-for
+
+Dev.to is here:
+https://dev.to/aws-builders/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-o69
+
+Linked In is here:
+https://www.linkedin.com/feed/update/urn:li:activity:7524183996034043905/
+
+#A2A #AWS #AmazonBedrock #AgentCore #Lightsail #Strands #Rust

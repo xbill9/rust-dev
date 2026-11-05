@@ -6,5 +6,5 @@ devto-gde  = SKIP
 medium     = https://medium.com/@xbill999/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-4b220d778b33
 substack   = https://xbill9.substack.com/p/the-a2a-cli-on-aws-one-client-for
 builder    = https://builder.aws.com/content/3LhRgOSkTc8n2rMhcyO9J8g4M8F/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost
-linkedin   = PENDING
+linkedin   = https://www.linkedin.com/feed/update/urn:li:activity:7524183996034043905/
 repo       = https://github.com/xbill9/rust-dev/tree/main/a2a-strands-aws
