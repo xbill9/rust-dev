@@ -1,7 +1,7 @@
 # Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
 # run on purpose: a post whose links do not resolve is worse than no post.
-# dev.to draft 4983339 created 2026-11-05 under aws-builders; nothing published yet.
-devto-aws  = PENDING
+# dev.to 4983339 published 2026-11-05 under aws-builders.
+devto-aws  = https://dev.to/aws-builders/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-o69
 devto-gde  = SKIP
 medium     = PENDING
 substack   = PENDING

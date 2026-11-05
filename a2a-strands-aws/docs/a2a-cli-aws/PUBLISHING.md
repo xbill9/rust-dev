@@ -2,8 +2,12 @@
 
 | Destination | State |
 |---|---|
-| dev.to (`aws-builders`, 2794) | draft created 2026-11-05 | id `4983339`, https://dev.to/aws-builders/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-4ag2-temp-slug-4062625 (the slug changes on publish) |
-| Medium, Substack, Builder Center, LinkedIn | not created |
+| dev.to (`aws-builders`, 2794) | **published** 2026-11-05, id `4983339`: https://dev.to/aws-builders/the-a2a-cli-on-aws-one-client-for-lightsail-bedrock-agentcore-and-localhost-o69 |
+| Medium | draft `4b220d778b33`, https://medium.com/p/4b220d778b33/edit (title set; 90 blocks, 15 headings, 17 code blocks, 5 re-hosted images, read back from `?format=json`) |
+| Substack (xbill9) | draft `223663994`, https://xbill9.substack.com/publish/post/223663994 (title + subtitle set; 15 h3, 17 code blocks, 5 re-hosted images, 10 link targets, read back with `ss.audit()`) |
+| Builder Center, LinkedIn | not created |
+
+Substack paste note: the References item `https://strandsagents.com/` (link text equal to a bare root URL) was saved as a plain paragraph outside the list, link dropped. The draft was re-pasted with that anchor's text set to `strandsagents.com`; the href is unchanged.
 
 Kit: `~/publishing-kit/skills/publishing/scripts/`.
 
