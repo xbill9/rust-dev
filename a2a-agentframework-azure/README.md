@@ -89,7 +89,7 @@ Base URL, one header. The card sits at the standard `/.well-known/agent-card.jso
 
 `scripts/test-cli.sh all` runs one set of checks against all four endpoints. For each Rust agent it checks the card (A2A v1.0), send, stream, REST and a data part. For each coordinator it checks the card (A2A v1.0), send, stream and REST; for the cloud coordinator it also checks that a request without a token gets 401. Every reply check greps for the agent's reply line `Found first N Mersenne primes`. Transcript: `results/test-cli-all-20261106T154841Z.txt`, 19 of 19 passed.
 
-The cloud coordinator's log shows each of its tool calls answered by the Container Apps Rust agent, for example `rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 11 Mersenne primes in 0.0397ms.`
+The cloud coordinator's log (`results/aca-coordinator-log-20261106.txt`) shows every one of its tool calls answered by the Container Apps Rust agent: the three from the checks and the six from the timing run (one warm-up, five timed), for example `rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 11 Mersenne primes in 0.0397ms.`
 
 #### Step 6 — Timing through the CLI
 
@@ -101,6 +101,8 @@ The cloud coordinator's log shows each of its tool calls answered by the Contain
 | Rust, Container Apps (HTTPS) | 20/20 | 164.2 ms | 0.02985 ms | `cli-bench-20261106T154938Z.json` |
 | Agent Framework, localhost | 5/5 | 1910.2 ms | — | `cli-bench-20261106T155001Z.json` |
 | Agent Framework, Container Apps | 5/5 | 1769.2 ms | — | `cli-bench-20261106T155001Z.json` |
+
+Differences of medians, computed by `scripts/summarize-results.py` (`results/summary-20261106.txt`): the Container Apps Rust agent takes 153.7 ms more than the local one, and the Container Apps coordinator takes 141.0 ms less than the local one. The cloud coordinator runs in eastus2 beside the model and the Rust agent it calls; the local one reaches the model across the internet. Whether that placement accounts for the 141.0 ms is untested, from five reps.
 
 N=10 throughout. Wall time includes process start, card fetch, TLS on Azure and, for the coordinators, an Azure OpenAI call plus a nested A2A call to a Rust agent. The local coordinator calls the local Rust agent; the cloud coordinator calls the Container Apps one.
 
@@ -115,6 +117,17 @@ N=10 throughout. Wall time includes process start, card fetch, TLS on Azure and,
 | Inbound auth | Cognito JWT, plus a 33+ character session id header | Entra ID JWT via built-in auth |
 | Card URL for the CLI | full `.../invocations/.well-known/agent-card.json` | base URL |
 | Model credentials | IAM role | managed identity, Entra ID |
+
+#### Evidence
+
+| File | What it holds |
+|---|---|
+| `results/test-cli-all-20261106T154841Z.txt` | the 19 checks, with every card |
+| `results/cli-bench-20261106T154938Z.json`, `results/cli-bench-20261106T155001Z.json` | timing, per target |
+| `results/summary-20261106.txt` | the figures above, from `scripts/summarize-results.py` |
+| `results/aca-coordinator-log-20261106.txt` | the cloud coordinator's tool calls to the Rust agent |
+| `results/deploy-{model,rust,coordinator}-20261106.log` | every `az` command the deploy scripts ran |
+| `results/env-20261106.txt` | tool and package versions, model, image tags, app sizes |
 
 #### Teardown
 

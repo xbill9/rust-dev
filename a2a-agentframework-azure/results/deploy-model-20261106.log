@@ -1,0 +1,8 @@
+$ az group create -n a2a-agentframework-azure-rg -l eastus2
+$ az role assignment create --assignee-object-id 228ae848-d8ab-476b-ac3b-83c807ad3eb2 --assignee-principal-type ServicePrincipal --role AcrPull --scope /subscriptions/3db3ce66-50b6-4d11-91ef-5950cf4039ed/resourceGroups/a2a-agentframework-azure-rg/providers/Microsoft.ContainerRegistry/registries/a2aafazuredefaba
+$ az containerapp env create -n a2a-af-env -g a2a-agentframework-azure-rg -l eastus2 --logs-destination none
+$ az cognitiveservices account create -n a2a-af-openai-defaba -g a2a-agentframework-azure-rg -l eastus2 --kind AIServices --sku S0 --custom-domain a2a-af-openai-defaba --yes
+$ az cognitiveservices account deployment create -n a2a-af-openai-defaba -g a2a-agentframework-azure-rg --deployment-name gpt-5.4-mini --model-name gpt-5.4-mini --model-version 2026-03-17 --model-format OpenAI --sku-name GlobalStandard --sku-capacity 50
+$ az role assignment create --assignee-object-id 1308f5c8-3e60-4b43-9f72-457b2d27290b --assignee-principal-type User --role Cognitive Services OpenAI User --scope /subscriptions/3db3ce66-50b6-4d11-91ef-5950cf4039ed/resourceGroups/a2a-agentframework-azure-rg/providers/Microsoft.CognitiveServices/accounts/a2a-af-openai-defaba
+$ az role assignment create --assignee-object-id 228ae848-d8ab-476b-ac3b-83c807ad3eb2 --assignee-principal-type ServicePrincipal --role Cognitive Services OpenAI User --scope /subscriptions/3db3ce66-50b6-4d11-91ef-5950cf4039ed/resourceGroups/a2a-agentframework-azure-rg/providers/Microsoft.CognitiveServices/accounts/a2a-af-openai-defaba
+✅ https://a2a-af-openai-defaba.cognitiveservices.azure.com/ deployment gpt-5.4-mini

@@ -1,0 +1,9 @@
+2026-11-06T15:48:08.2911284+00:00 INFO:coordinator:model gpt-5.4-mini, rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io, advertised at https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io
+2026-11-06T15:49:12.9486045+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 7 Mersenne primes in 0.0062ms.
+2026-11-06T15:49:14.9526771+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 11 Mersenne primes in 0.0397ms.
+2026-11-06T15:49:17.112578+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 3 Mersenne primes in 0.0388ms.
+2026-11-06T15:49:46.1420399+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 10 Mersenne primes in 0.0239ms.
+2026-11-06T15:49:49.4582476+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 10 Mersenne primes in 0.0454ms.
+2026-11-06T15:49:53.9990304+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 10 Mersenne primes in 0.0337ms.
+2026-11-06T15:49:57.7678643+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 10 Mersenne primes in 0.0496ms.
+2026-11-06T15:50:00.9942478+00:00 INFO:coordinator:rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 10 Mersenne primes in 0.0233ms.

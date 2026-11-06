@@ -1,0 +1,22 @@
+$ az acr login -n a2aafazuredefaba
+$ docker build --platform linux/amd64 -f docker/agent.Dockerfile -t a2aafazuredefaba.azurecr.io/mersenne-agent:20261106T153734Z /home/xbill/rust-dev/a2a-agentframework-azure
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$ docker push a2aafazuredefaba.azurecr.io/mersenne-agent:20261106T153734Z
+The push refers to repository [a2aafazuredefaba.azurecr.io/mersenne-agent]
+20261106T153734Z: digest: sha256:f931a963b93e4ff3d030c21fd1a9cb09b790ae41ea01ebd52e477429c7e27be4 size: 855
+$ az containerapp create -n a2a-rust-mersenne -g a2a-agentframework-azure-rg --environment a2a-af-env --image a2aafazuredefaba.azurecr.io/mersenne-agent:20261106T153734Z --target-port 8080 --ingress external --user-assigned /subscriptions/3db3ce66-50b6-4d11-91ef-5950cf4039ed/resourcegroups/a2a-agentframework-azure-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/a2a-af-identity --registry-server a2aafazuredefaba.azurecr.io --registry-identity /subscriptions/3db3ce66-50b6-4d11-91ef-5950cf4039ed/resourcegroups/a2a-agentframework-azure-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/a2a-af-identity --cpu 0.25 --memory 0.5Gi --min-replicas 1 --max-replicas 1 --env-vars PORT=8080 HOST=0.0.0.0 ADVERTISE_URL=https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io
+✅ https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io/.well-known/agent-card.json
