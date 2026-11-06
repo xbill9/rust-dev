@@ -1,0 +1,90 @@
+$ a2a card get -a https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io -o json
+{
+  "supportedInterfaces": [
+    {
+      "url": "https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io/jsonrpc",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io/rest",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": {
+    "pushNotifications": false,
+    "streaming": true
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "description": "A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.",
+  "name": "Mersenne Prime Agent Rust",
+  "skills": [
+    {
+      "description": "Finds the first n Mersenne primes (n <= 26) and times the run.",
+      "examples": [
+        "Calculate the first 20 Mersenne primes"
+      ],
+      "id": "find-mersenne-rust",
+      "name": "Find Mersenne Primes in Rust",
+      "tags": [
+        "math",
+        "benchmark"
+      ]
+    }
+  ],
+  "version": "0.1.0"
+}
+
+$ a2a --auth Bearer $TOKEN card get -a https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io -o json
+{
+  "supportedInterfaces": [
+    {
+      "url": "https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io/",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io/rest",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": {
+    "pushNotifications": false,
+    "streaming": true
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "description": "Microsoft Agent Framework agent on Azure OpenAI (A2A 1.0) that delegates Mersenne prime runs to a Rust A2A 1.0 agent.",
+  "name": "Agent Framework Mersenne Coordinator",
+  "skills": [
+    {
+      "description": "Finds the first N Mersenne primes (N <= 26) with the Rust A2A agent.",
+      "examples": [
+        "Find the first 9 Mersenne primes"
+      ],
+      "id": "mersenne-via-rust",
+      "name": "Mersenne primes via the Rust agent",
+      "tags": [
+        "math",
+        "rust",
+        "agent-framework",
+        "azure-openai"
+      ]
+    }
+  ],
+  "version": "0.1.0"
+}
+

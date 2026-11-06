@@ -1,0 +1,12 @@
+# claims of the token scripts/entra-token.py returns (payload only; the token is not stored)
+{
+  "aud": "67ce79d7-7432-4261-b394-d32c2fc36890",
+  "iss": "https://login.microsoftonline.com/40482c55-d00d-4c6d-8903-643d76a74b9c/v2.0",
+  "ver": "2.0",
+  "scp": "access_as_user",
+  "azp": "04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+  "tid": "40482c55-d00d-4c6d-8903-643d76a74b9c",
+  "exp": 1793984508,
+  "iat": 1793979843,
+  "lifetime_s": 4665
+}

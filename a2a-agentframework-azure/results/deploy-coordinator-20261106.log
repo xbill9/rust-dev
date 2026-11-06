@@ -1,6 +1,6 @@
 $ az rest --method PATCH --uri https://graph.microsoft.com/v1.0/applications/9680724c-dff2-4e24-a7ca-92de89868823 --headers Content-Type=application/json --body {"api": {"preAuthorizedApplications": [{"appId": "04b07795-8ddb-461a-bbee-02f9e1bf7b46", "delegatedPermissionIds": ["ed208901-8684-44c0-879f-ad345516d4f6"]}]}}
 $ az acr login -n a2aafazuredefaba
-$ docker build --platform linux/amd64 -f docker/coordinator.Dockerfile -t a2aafazuredefaba.azurecr.io/af-coordinator:20261106T154714Z /home/xbill/rust-dev/a2a-agentframework-azure
+$ docker build --platform linux/amd64 -f docker/coordinator.Dockerfile -t a2aafazuredefaba.azurecr.io/af-coordinator:20261106T161604Z /home/xbill/rust-dev/a2a-agentframework-azure
 
 
 
@@ -11,10 +11,10 @@ $ docker build --platform linux/amd64 -f docker/coordinator.Dockerfile -t a2aafa
 
 
 
-$ docker push a2aafazuredefaba.azurecr.io/af-coordinator:20261106T154714Z
+$ docker push a2aafazuredefaba.azurecr.io/af-coordinator:20261106T161604Z
 The push refers to repository [a2aafazuredefaba.azurecr.io/af-coordinator]
-20261106T154714Z: digest: sha256:39bbb908ec76fca8a5045014704544f39f5d0cee71d2dedaa8357a3de9be43b2 size: 856
-$ az containerapp update -n a2a-af-coordinator -g a2a-agentframework-azure-rg --image a2aafazuredefaba.azurecr.io/af-coordinator:20261106T154714Z --set-env-vars PORT=8080 ADVERTISE_URL=https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io RUST_AGENT_URL=https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io AZURE_OPENAI_ENDPOINT=https://a2a-af-openai-defaba.cognitiveservices.azure.com/ MODEL=gpt-5.4-mini AZURE_CLIENT_ID=c15d5950-3f6b-4c95-96c4-c18ed37aa466
+20261106T161604Z: digest: sha256:c0371c6aef57a42ac96a775050b754367f65b293750b9f7fe91899b7ecac783f size: 856
+$ az containerapp update -n a2a-af-coordinator -g a2a-agentframework-azure-rg --image a2aafazuredefaba.azurecr.io/af-coordinator:20261106T161604Z --set-env-vars PORT=8080 ADVERTISE_URL=https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io RUST_AGENT_URL=https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io AZURE_OPENAI_ENDPOINT=https://a2a-af-openai-defaba.cognitiveservices.azure.com/ MODEL=gpt-5.4-mini AZURE_CLIENT_ID=c15d5950-3f6b-4c95-96c4-c18ed37aa466
 $ az containerapp auth microsoft update -n a2a-af-coordinator -g a2a-agentframework-azure-rg --client-id 67ce79d7-7432-4261-b394-d32c2fc36890 --issuer https://login.microsoftonline.com/40482c55-d00d-4c6d-8903-643d76a74b9c/v2.0 --allowed-audiences api://67ce79d7-7432-4261-b394-d32c2fc36890,67ce79d7-7432-4261-b394-d32c2fc36890 --yes
 $ az containerapp auth update -n a2a-af-coordinator -g a2a-agentframework-azure-rg --enabled true --unauthenticated-client-action Return401
 ✅ https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io/.well-known/agent-card.json (401 without a token)

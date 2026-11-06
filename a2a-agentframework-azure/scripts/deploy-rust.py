@@ -44,6 +44,24 @@ def create_or_update(name: str, image: str, env: dict[str, str], port: int) -> N
     else:
         az("containerapp", "update", "-n", name, "-g", RG, "--image", image,
            "--set-env-vars", *env_args)
+    wait_revision(name, image)
+
+
+def wait_revision(name: str, image: str, timeout: int = 600) -> None:
+    """Wait until the revision running `image` is ready and no other revision
+    still has replicas: an old revision keeps answering while it deprovisions."""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        revs = az("containerapp", "revision", "list", "-n", name, "-g", RG, quiet=True) or []
+        new = [r for r in revs if r["properties"]["template"]["containers"][0]["image"] == image]
+        old_live = [r["name"] for r in revs if r not in new and r["properties"].get("active")
+                    and r["properties"].get("runningState") not in ("Deprovisioned", "Stopped")]
+        state = new[0]["properties"].get("runningState") if new else None
+        if new and state in ("Running", "RunningAtMaxScale") and not old_live:
+            return
+        print(f"  waiting for revision: new={state} old still live={old_live}", flush=True)
+        time.sleep(10)
+    sys.exit(f"timed out waiting for {name} to run only {image}")
 
 
 def wait_card(url: str, headers: dict | None = None, ok=(200,), timeout: int = 300) -> int:

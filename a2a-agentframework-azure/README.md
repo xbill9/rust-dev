@@ -83,13 +83,15 @@ a2a --auth "Bearer $TOKEN" send -a "$URL" --transport rest "Find the first 3 Mer
 
 Base URL, one header. The card sits at the standard `/.well-known/agent-card.json` path, and each call goes to a fresh A2A context with no session header.
 
-🔎 Tip: the async `azure.identity` credential needs `aiohttp`, and nothing in the Agent Framework or `a2a-sdk` dependency tree pulls it in. `coordinator/requirements.txt` pins it.
+🔎 Tip: the async `azure.identity` credential needs `aiohttp`, and nothing in the Agent Framework or `a2a-sdk` dependency tree pulls it in. In a clean `python:3.14-slim` image the credential fails with `ImportError: aiohttp package is not installed` (`results/dependencies-20261106.txt`). `coordinator/requirements.txt` pins it.
+
+🔎 Tip: Agent Framework's OpenAI client streams a reply as text deltas and then sends one more update holding the whole text under the same message id (`results/responses-stream-updates-20261106.txt`). `A2AExecutor` appends every update to one artifact, so the finished task would hold one part per token followed by the full reply again. `WholeTextA2AExecutor` in `coordinator/main.py` lets that closing update replace the artifact instead. Streaming clients still see the deltas arrive, and the finished task holds the reply once, as a single text part. On `--stream`, the CLI prints one `[artifact]` line for the streamed deltas and one for the replacement.
 
 #### Step 5 — Same checks everywhere
 
-`scripts/test-cli.sh all` runs one set of checks against all four endpoints. For each Rust agent it checks the card (A2A v1.0), send, stream, REST and a data part. For each coordinator it checks the card (A2A v1.0), send, stream and REST; for the cloud coordinator it also checks that a request without a token gets 401. Every reply check greps for the agent's reply line `Found first N Mersenne primes`. Transcript: `results/test-cli-all-20261106T154841Z.txt`, 19 of 19 passed.
+`scripts/test-cli.sh all` runs one set of checks against all four endpoints. For each Rust agent it checks the card (A2A v1.0), send, stream, REST and a data part. For each coordinator it checks the card (A2A v1.0), send, stream and REST; for the cloud coordinator it also checks that a request without a token gets 401. Every reply check greps for the agent's reply line `Found first N Mersenne primes`; the coordinator checks also require it once per reply, with no repeated copy. Transcript: `results/test-cli-all-20261106T162111Z.txt`, 19 of 19 passed.
 
-The cloud coordinator's log (`results/aca-coordinator-log-20261106.txt`) shows every one of its tool calls answered by the Container Apps Rust agent: the three from the checks and the six from the timing run (one warm-up, five timed), for example `rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 11 Mersenne primes in 0.0397ms.`
+The cloud coordinator's log (`results/aca-coordinator-log-20261106.txt`) covers that run. Its three cloud coordinator calls (N=7, 11 and 3) each appear there answered by the Container Apps Rust agent, for example `rust agent https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io: Found first 11 Mersenne primes in 0.0339ms.`
 
 #### Step 6 — Timing through the CLI
 
@@ -99,10 +101,10 @@ The cloud coordinator's log (`results/aca-coordinator-log-20261106.txt`) shows e
 |---|---|---|---|---|
 | Rust, localhost | 20/20 | 10.5 ms | 0.02268 ms | `cli-bench-20261106T154938Z.json` |
 | Rust, Container Apps (HTTPS) | 20/20 | 164.2 ms | 0.02985 ms | `cli-bench-20261106T154938Z.json` |
-| Agent Framework, localhost | 5/5 | 1910.2 ms | — | `cli-bench-20261106T155001Z.json` |
-| Agent Framework, Container Apps | 5/5 | 1769.2 ms | — | `cli-bench-20261106T155001Z.json` |
+| Agent Framework, localhost | 20/20 | 1836.0 ms | — | `cli-bench-20261106T162003Z.json` |
+| Agent Framework, Container Apps | 20/20 | 1891.2 ms | — | `cli-bench-20261106T162003Z.json` |
 
-Differences of medians, computed by `scripts/summarize-results.py` (`results/summary-20261106.txt`): the Container Apps Rust agent takes 153.7 ms more than the local one, and the Container Apps coordinator takes 141.0 ms less than the local one. The cloud coordinator runs in eastus2 beside the model and the Rust agent it calls; the local one reaches the model across the internet. Whether that placement accounts for the 141.0 ms is untested, from five reps.
+Differences of medians, computed by `scripts/summarize-results.py` (`results/summary-20261106.txt`): the Container Apps Rust agent takes 153.7 ms more than the local one, and the Container Apps coordinator 55.2 ms more than the local one. The coordinator ranges overlap (local 1374.5–4833.5 ms, Container Apps 1581.2–4372.4 ms): the model call dominates, and where the coordinator runs moves the median by less than the call-to-call spread.
 
 N=10 throughout. Wall time includes process start, card fetch, TLS on Azure and, for the coordinators, an Azure OpenAI call plus a nested A2A call to a Rust agent. The local coordinator calls the local Rust agent; the cloud coordinator calls the Container Apps one.
 
@@ -122,10 +124,15 @@ N=10 throughout. Wall time includes process start, card fetch, TLS on Azure and,
 
 | File | What it holds |
 |---|---|
-| `results/test-cli-all-20261106T154841Z.txt` | the 19 checks, with every card |
-| `results/cli-bench-20261106T154938Z.json`, `results/cli-bench-20261106T155001Z.json` | timing, per target |
+| `results/test-cli-all-20261106T162111Z.txt` | the 19 checks |
+| `results/cli-bench-20261106T154938Z.json`, `results/cli-bench-20261106T162003Z.json` | timing, per target |
 | `results/summary-20261106.txt` | the figures above, from `scripts/summarize-results.py` |
-| `results/aca-coordinator-log-20261106.txt` | the cloud coordinator's tool calls to the Rust agent |
+| `results/aca-coordinator-log-20261106.txt` | the cloud coordinator's tool calls to the Rust agent during that check run |
+| `results/cards-20261106.txt` | both Container Apps cards, full JSON |
+| `results/sends-20261106.txt` | full CLI output for sample calls to both cloud agents, plus the 401s for no token and a malformed one |
+| `results/entra-token-claims-20261106.txt` | audience, issuer, version, scope and client of the token `scripts/entra-token.py` returns (no token stored) |
+| `results/responses-stream-updates-20261106.txt` | every text update of one streamed reply, ending in the whole-text repeat |
+| `results/dependencies-20261106.txt` | `agent-framework-a2a` requiring `a2a-sdk` 1.x, the shared Python's 0.3, and the missing-`aiohttp` failure |
 | `results/deploy-{model,rust,coordinator}-20261106.log` | every `az` command the deploy scripts ran |
 | `results/env-20261106.txt` | tool and package versions, model, image tags, app sizes |
 
@@ -137,7 +144,7 @@ make teardown   # app registration, then the resource group, then purge the soft
 
 #### Scope
 
-One region (eastus2), one replica of each app at 0.25 vCPU, one model, N=10 for timing, five or twenty reps per target, on 2026-11-06. The timings show where the time goes; they are not a platform comparison at load.
+One region (eastus2), one replica of each app at 0.25 vCPU, one model, N=10 for timing, twenty reps per target, on 2026-11-06. The timings show where the time goes; they are not a platform comparison at load.
 
 #### Layout
 

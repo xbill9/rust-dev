@@ -38,7 +38,7 @@ from a2a.types import (
     AgentCapabilities, AgentCard, AgentInterface, AgentSkill, Message, Part, Role,
     SendMessageRequest,
 )
-from agent_framework import Agent, tool
+from agent_framework import Agent, AgentResponseUpdate, tool
 from agent_framework_a2a import A2AExecutor
 from agent_framework_openai import OpenAIChatClient
 from azure.identity.aio import DefaultAzureCredential
@@ -123,6 +123,35 @@ DESCRIPTION = (
 )
 
 
+class WholeTextA2AExecutor(A2AExecutor):
+    """A2AExecutor that ends each streamed reply with one whole-text part.
+
+    The OpenAI Responses client streams text deltas, then one more update
+    carrying the whole text under the same message id. A2AExecutor appends
+    every update to one artifact, so the stored task would hold one part per
+    token followed by the whole text again: the reply twice over. Here the
+    closing update replaces the artifact instead (append unset on a known
+    artifact id), so streaming clients still see the deltas and the finished
+    task holds the reply once, as a single text part.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._streamed: dict[str, str] = {}
+
+    async def handle_events(self, item, updater, streamed_artifact_ids=None, default_artifact_id=None):
+        if isinstance(item, AgentResponseUpdate):
+            key = item.message_id or default_artifact_id or ""
+            text = "".join(c.text for c in item.contents if c.type == "text" and c.text)
+            so_far = self._streamed.get(key, "")
+            if text and so_far and text == so_far:
+                del self._streamed[key]
+                if streamed_artifact_ids is not None:
+                    streamed_artifact_ids.discard(key)  # next add_artifact replaces
+            elif text:
+                self._streamed[key] = so_far + text
+        await super().handle_events(item, updater, streamed_artifact_ids, default_artifact_id)
+
 def agent_card() -> AgentCard:
     return AgentCard(
         name=NAME,
@@ -155,7 +184,7 @@ def app() -> Starlette:
                   instructions=INSTRUCTIONS, tools=[find_mersenne_primes])
     card = agent_card()
     handler = DefaultRequestHandler(
-        agent_executor=A2AExecutor(agent, stream=True),
+        agent_executor=WholeTextA2AExecutor(agent, stream=True),
         task_store=InMemoryTaskStore(),
         agent_card=card,
     )

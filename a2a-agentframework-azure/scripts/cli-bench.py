@@ -69,7 +69,7 @@ def call(t: dict, n: int, tok: str | None) -> dict:
         row["ok"] = int(data["requested"]) == n and int(data["found"]) == n
     else:
         text = " ".join(pt.get("text", "") for a in task.get("artifacts") or [] for pt in a["parts"])
-        row["ok"] = f"Found first {n} Mersenne primes" in text
+        row["ok"] = text.count(f"Found first {n} Mersenne primes") == 1  # once, not repeated
         if not row["ok"]:
             row["error"] = text[:300]
     return row

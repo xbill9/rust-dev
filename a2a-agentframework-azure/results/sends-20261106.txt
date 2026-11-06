@@ -1,0 +1,131 @@
+$ a2a send -a https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io Calculate the first 12 Mersenne primes
+Task:     01a1b1a9-21bd-7006-8a0b-73ec08ba2ee5
+Context:  01a1b1a9-21bd-7006-8a0b-73edf671b948
+Status:   completed (2026-11-06T16:20:13Z)
+  Found first 12 Mersenne primes in 0.0484ms.
+Artifacts:
+  [mersenne-report] Found first 12 Mersenne primes in 0.0484ms. {"elapsed_ms":0.048401,"exponents":[2,3,5,7,13,17,19,31,61,89,107,127],"found":12,"requested":12}
+
+$ a2a send -a https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io --data-part {"count": 6} -o json
+{
+  "task": {
+    "id": "01a1b1a9-2255-7329-98a7-06f02c09fa34",
+    "artifacts": [
+      {
+        "artifactId": "01a1b1a9-2256-72f6-987c-1ee4f197deaa",
+        "description": "Structured timing for the Lucas-Lehmer run",
+        "name": "mersenne-report",
+        "parts": [
+          {
+            "text": "Found first 6 Mersenne primes in 0.0080ms."
+          },
+          {
+            "data": {
+              "elapsed_ms": 0.008,
+              "exponents": [
+                2,
+                3,
+                5,
+                7,
+                13,
+                17
+              ],
+              "found": 6,
+              "requested": 6
+            }
+          }
+        ]
+      }
+    ],
+    "contextId": "01a1b1a9-2255-7329-98a7-06f1c47f8ac2",
+    "status": {
+      "message": {
+        "messageId": "01a1b1a9-2256-72f6-987c-1ee3d01781cd",
+        "contextId": "01a1b1a9-2255-7329-98a7-06f1c47f8ac2",
+        "parts": [
+          {
+            "text": "Found first 6 Mersenne primes in 0.0080ms."
+          }
+        ],
+        "role": "ROLE_AGENT",
+        "taskId": "01a1b1a9-2255-7329-98a7-06f02c09fa34"
+      },
+      "state": "TASK_STATE_COMPLETED",
+      "timestamp": "2026-11-06T16:20:14.038009564Z"
+    }
+  }
+}
+
+$ a2a --auth Bearer $TOKEN --timeout 120s send -a https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io Find the first 9 Mersenne primes
+Task:     e2553e54-3267-4621-ba52-dab572cf8fda
+Context:  32da6832-ec01-472b-9cff-b7e365a1e4a6
+Status:   completed (2026-11-06T16:20:15Z)
+Artifacts:
+  [msg_046992566f514da7006aedfe3f5b988194b64aae53fc6d2217] Found first 9 Mersenne primes in 0.0145ms.
+2, 3, 5, 7, 13, 17, 19, 31, 61
+History:
+  [user] Find the first 9 Mersenne primes
+
+$ a2a --auth Bearer $TOKEN --timeout 120s send -a https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io --stream first 11 Mersenne primes
+Task:     958c8ee2-16c4-4299-b230-f9a6e04af8f1
+Context:  0086f6be-0866-459a-a928-07851d325856
+Status:   submitted
+History:
+  [user] first 11 Mersenne primes
+[status] submitted
+[status] working
+[artifact] Found first 11 Mersenne primes in 0.0737ms.
+2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107
+[artifact] Found first 11 Mersenne primes in 0.0737ms.
+2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107
+[status] completed
+
+$ a2a --auth Bearer $TOKEN --timeout 120s send -a https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io --transport rest Find the first 3 Mersenne primes
+Task:     f6394a28-a513-4030-b1db-41b0244ad133
+Context:  ca6ce1f8-5391-41f8-b7f3-0b5f0f88c801
+Status:   completed (2026-11-06T16:20:22Z)
+Artifacts:
+  [msg_0a2ef6a5893a0e6d006aedfe460ca48195931f337d1ca8db4e] Found first 3 Mersenne primes in 0.0030ms.
+2, 3, 5
+History:
+  [user] Find the first 3 Mersenne primes
+
+$ a2a --auth Bearer $TOKEN --timeout 120s send -a https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io -o json Find the first 10 Mersenne primes
+{
+  "task": {
+    "id": "38db2cd7-3d82-41b9-9e96-a01259cba4da",
+    "artifacts": [
+      {
+        "artifactId": "msg_0df9fa92840724f8006aedfe47b9208195b7c9c1698118b7c1",
+        "parts": [
+          {
+            "text": "Found first 10 Mersenne primes in 0.0549ms.\n2, 3, 5, 7, 13, 17, 19, 31, 61, 89"
+          }
+        ]
+      }
+    ],
+    "contextId": "357d06cc-2fa3-415c-8fe5-8bf8c2e1dacf",
+    "history": [
+      {
+        "messageId": "01a1b1a9-428e-7056-87e9-32d57a13780e",
+        "contextId": "357d06cc-2fa3-415c-8fe5-8bf8c2e1dacf",
+        "parts": [
+          {
+            "text": "Find the first 10 Mersenne primes"
+          }
+        ],
+        "role": "ROLE_USER",
+        "taskId": "38db2cd7-3d82-41b9-9e96-a01259cba4da"
+      }
+    ],
+    "status": {
+      "state": "TASK_STATE_COMPLETED",
+      "timestamp": "2026-11-06T16:20:24.042727Z"
+    }
+  }
+}
+
+$ curl -s -o /dev/null -w '%{http_code}' $URL/.well-known/agent-card.json   # no token
+401
+$ curl ... -H 'Authorization: Bearer not-a-jwt'
+401

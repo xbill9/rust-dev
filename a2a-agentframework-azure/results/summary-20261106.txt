@@ -2,13 +2,13 @@
 local-rust: ok 20/20, wall median 10.5 ms (min 7.9, max 12.3), compute median 0.02268 ms (min 0.0193, max 0.04887)
 aca-rust: ok 20/20, wall median 164.2 ms (min 143.4, max 199.9), compute median 0.02985 ms (min 0.0227, max 0.0617)
 
-## cli-bench-20261106T155001Z.json: N=10, 5 reps per target, a2a v0.3.1
-local-coordinator: ok 5/5, wall median 1910.2 ms (min 1532.9, max 2582.1)
-aca-coordinator: ok 5/5, wall median 1769.2 ms (min 1561.3, max 2054.8)
+## cli-bench-20261106T162003Z.json: N=10, 20 reps per target, a2a v0.3.1
+local-coordinator: ok 20/20, wall median 1836.0 ms (min 1374.5, max 4833.5)
+aca-coordinator: ok 20/20, wall median 1891.2 ms (min 1581.2, max 4372.4)
 
 ## Differences of medians (Container Apps minus localhost, same file)
 aca-rust minus local-rust: 153.7 ms
-aca-coordinator minus local-coordinator: -141.0 ms
+aca-coordinator minus local-coordinator: 55.2 ms
 
 ## CLI checks (results/test-cli-all-*.txt)
-test-cli-all-20261106T154841Z.txt: 19 of 19 checks passed across 4 endpoints
+test-cli-all-20261106T162111Z.txt: 19 of 19 checks passed across 4 endpoints

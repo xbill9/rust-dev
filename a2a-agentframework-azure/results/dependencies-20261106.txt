@@ -1,0 +1,12 @@
+# agent-framework-a2a wheel metadata (Requires-Dist)
+Requires-Dist: agent-framework-core>=1.22.0,<2
+Requires-Dist: a2a-sdk>=1.0.0,<2
+
+# shared pyenv Python (used by the Strands rig)
+a2a-sdk 0.3.26
+
+# does the requirements set (without the aiohttp pin) install aiohttp?
+aiohttp dist-info dirs installed: 0
+
+# azure.identity.aio without aiohttp (python:3.14-slim, requirements minus aiohttp)
+ImportError: aiohttp package is not installed

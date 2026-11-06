@@ -1,20 +1,20 @@
 {
-  "when": "2026-11-06T15:50:01Z",
+  "when": "2026-11-06T16:20:03Z",
   "n": 10,
-  "reps": 5,
+  "reps": 20,
   "a2a": "a2a v0.3.1",
   "targets": {
     "local-coordinator": {
       "url": "http://localhost:8309",
       "kind": "coordinator",
       "platform": "local",
-      "calls": 5,
-      "ok": 5,
+      "calls": 20,
+      "ok": 20,
       "errors": [],
       "wall_ms": {
-        "median": 1910.2389330219012,
-        "min": 1532.9446160176303,
-        "max": 2582.121993007604
+        "median": 1836.0394230112433,
+        "min": 1374.4593600276858,
+        "max": 4833.540471998276
       },
       "compute_ms": {}
     },
@@ -22,13 +22,13 @@
       "url": "https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io",
       "kind": "coordinator",
       "platform": "container-apps",
-      "calls": 5,
-      "ok": 5,
+      "calls": 20,
+      "ok": 20,
       "errors": [],
       "wall_ms": {
-        "median": 1769.2454490170348,
-        "min": 1561.3207720161881,
-        "max": 2054.7816100006457
+        "median": 1891.1988180043409,
+        "min": 1581.1713750008494,
+        "max": 4372.391971992329
       },
       "compute_ms": {}
     }

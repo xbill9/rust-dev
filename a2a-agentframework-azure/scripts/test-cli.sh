@@ -17,6 +17,15 @@ bad() { echo "❌ $1"; [ -n "${2:-}" ] && echo "$2"; fail=1; }
 expect() { # label pattern output
   if grep -q "$2" <<<"$3"; then ok "$1"; else bad "$1" "$3"; fi
 }
+once() { # label pattern output: the reply line appears exactly once
+  local n; n=$(grep -o "$2" <<<"$3" | wc -l)
+  if [ "$n" = 1 ]; then ok "$1"; else bad "$1 (seen $n times)" "$3"; fi
+}
+undoubled() { # label pattern output: present, and never run on from a previous copy
+  # (a stream shows the reply per artifact event; "...61Found first" is one
+  # artifact holding it twice)
+  if grep -q "$2" <<<"$3" && ! grep -q "[0-9]$2" <<<"$3"; then ok "$1"; else bad "$1" "$3"; fi
+}
 
 rust_checks() { # name url
   local name=$1 url=$2 o
@@ -34,9 +43,9 @@ coordinator_checks() { # name url [extra a2a flags...]
   echo "== $name agent framework coordinator ($url)"
   o=$(a2a "$@" card get -a "$url"); echo "$o" | head -6
   expect "$name card (A2A v1.0)" "A2A v1.0" "$o"
-  expect "$name send" "Found first 7 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" "Find the first 7 Mersenne primes")"
-  expect "$name stream" "Found first 11 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" --stream "first 11 Mersenne primes")"
-  expect "$name rest" "Found first 3 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" --transport rest "Find the first 3 Mersenne primes")"
+  once "$name send" "Found first 7 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" "Find the first 7 Mersenne primes")"
+  undoubled "$name stream" "Found first 11 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" --stream "first 11 Mersenne primes")"
+  once "$name rest" "Found first 3 Mersenne primes" "$(a2a "$@" --timeout 120s send -a "$url" --transport rest "Find the first 3 Mersenne primes")"
 }
 
 state() { python3 scripts/azure_state.py get "$1"; }
