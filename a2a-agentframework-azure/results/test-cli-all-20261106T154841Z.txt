@@ -1,0 +1,50 @@
+    Finished `release` profile [optimized] target(s) in 0.07s
+up: 8304 rust agent, 8309 agent framework coordinator -> http://localhost:8304
+== local rust agent (http://localhost:8304)
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8304/jsonrpc
+  HTTP+JSON (A2A v1.0)   http://localhost:8304/rest
+✅ local card (A2A v1.0)
+✅ local send
+✅ local stream
+✅ local rest
+✅ local data-part
+== local agent framework coordinator (http://localhost:8309)
+Name:         Agent Framework Mersenne Coordinator
+Description:  Microsoft Agent Framework agent on Azure OpenAI (A2A 1.0) that delegates Mersenne prime runs to a Rust A2A 1.0 agent.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     http://localhost:8309/
+  HTTP+JSON (A2A v1.0)   http://localhost:8309/rest
+✅ local card (A2A v1.0)
+✅ local send
+✅ local stream
+✅ local rest
+== aca-rust rust agent (https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io)
+Name:         Mersenne Prime Agent Rust
+Description:  A Rust A2A v1.0 agent (official a2a-rs SDK) that confirms the first n Mersenne primes with the Lucas-Lehmer test and reports the elapsed time.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io/jsonrpc
+  HTTP+JSON (A2A v1.0)   https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io/rest
+✅ aca-rust card (A2A v1.0)
+✅ aca-rust send
+✅ aca-rust stream
+✅ aca-rust rest
+✅ aca-rust data-part
+-- without a token (expect 401)
+✅ aca-coordinator rejects no token (401)
+== aca-coordinator agent framework coordinator (https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io)
+Name:         Agent Framework Mersenne Coordinator
+Description:  Microsoft Agent Framework agent on Azure OpenAI (A2A 1.0) that delegates Mersenne prime runs to a Rust A2A 1.0 agent.
+Version:      0.1.0
+Interfaces:
+  JSONRPC (A2A v1.0)     https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io/
+  HTTP+JSON (A2A v1.0)   https://a2a-af-coordinator.braveground-531dbad2.eastus2.azurecontainerapps.io/rest
+✅ aca-coordinator card (A2A v1.0)
+✅ aca-coordinator send
+✅ aca-coordinator stream
+✅ aca-coordinator rest

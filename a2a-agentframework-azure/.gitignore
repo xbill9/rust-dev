@@ -1,0 +1,6 @@
+/target
+/logs
+/build
+__pycache__/
+# Azure resource ids and URLs (scripts/azure_state.py)
+/.azure-state.json

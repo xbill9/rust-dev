@@ -1,0 +1,44 @@
+{
+  "when": "2026-11-06T15:49:38Z",
+  "n": 10,
+  "reps": 20,
+  "a2a": "a2a v0.3.1",
+  "targets": {
+    "local-rust": {
+      "url": "http://localhost:8304",
+      "kind": "rust",
+      "platform": "local",
+      "calls": 20,
+      "ok": 20,
+      "errors": [],
+      "wall_ms": {
+        "median": 10.46560998656787,
+        "min": 7.936009991681203,
+        "max": 12.28017601533793
+      },
+      "compute_ms": {
+        "median": 0.0226835,
+        "min": 0.019299,
+        "max": 0.048867
+      }
+    },
+    "aca-rust": {
+      "url": "https://a2a-rust-mersenne.braveground-531dbad2.eastus2.azurecontainerapps.io",
+      "kind": "rust",
+      "platform": "container-apps",
+      "calls": 20,
+      "ok": 20,
+      "errors": [],
+      "wall_ms": {
+        "median": 164.20335101429373,
+        "min": 143.36034099687822,
+        "max": 199.90305800456554
+      },
+      "compute_ms": {
+        "median": 0.02985,
+        "min": 0.022699999999999998,
+        "max": 0.061701
+      }
+    }
+  }
+}
