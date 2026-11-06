@@ -443,7 +443,7 @@ $ az cognitiveservices account list-deleted --query "[].name"
 []
 ```
 
-`make deploy` recreates all three steps, and `make test-cli T=all` checks them again.
+The Container Apps and model addresses shown in this article belong to that deployment and no longer resolve. `make deploy` recreates all three steps under new addresses, and `make test-cli T=all` checks them again.
 
 ---
 
