@@ -135,6 +135,7 @@ N=10 throughout. Wall time includes process start, card fetch, TLS on Azure and,
 | `results/dependencies-20261106.txt` | `agent-framework-a2a` requiring `a2a-sdk` 1.x, the shared Python's 0.3, and the missing-`aiohttp` failure |
 | `results/deploy-{model,rust,coordinator}-20261106.log` | every `az` command the deploy scripts ran |
 | `results/env-20261106.txt` | tool and package versions, model, image tags, app sizes |
+| `results/teardown-20261106.txt` | the teardown, and checks afterwards that the resource group, the app registration and the soft-deleted model account are gone |
 
 #### Teardown
 
@@ -144,7 +145,14 @@ make teardown   # app registration, then the resource group, then purge the soft
 
 #### Scope
 
+The Azure resources were torn down on 2026-11-06; the hostnames above no longer resolve. `make deploy` recreates them under new ones.
+
+
 One region (eastus2), one replica of each app at 0.25 vCPU, one model, N=10 for timing, twenty reps per target, on 2026-11-06. The timings show where the time goes; they are not a platform comparison at load.
+
+#### Article
+
+`docs/a2a-cli-azure/devto-a2a-cli-azure.md`, with its cover, links file and `evidence/` (links to the cited files in `results/`).
 
 #### Layout
 

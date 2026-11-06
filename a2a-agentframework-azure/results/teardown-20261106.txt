@@ -1,0 +1,13 @@
+scripts/teardown.py
+$ az ad app delete --id 67ce79d7-7432-4261-b394-d32c2fc36890
+$ az group delete -n a2a-agentframework-azure-rg --yes
+$ az cognitiveservices account purge -n a2a-af-openai-defaba -g a2a-agentframework-azure-rg -l eastus2
+deleted a2a-agentframework-azure-rg
+
+# verification after teardown, 2026-11-06T17:01:40Z
+$ az group exists -n a2a-agentframework-azure-rg
+false
+$ az ad app show --id 67ce79d7-7432-4261-b394-d32c2fc36890
+ERROR: Resource '67ce79d7-7432-4261-b394-d32c2fc36890' does not exist or one of its queried reference-property objects are not present.
+$ az cognitiveservices account list-deleted --query "[].name"
+[]

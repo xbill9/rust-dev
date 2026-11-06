@@ -23,3 +23,5 @@ model gpt-5.4-mini 2026-03-17 GlobalStandard capacity 50
 rust image a2aafazuredefaba.azurecr.io/mersenne-agent:20261106T153734Z
 coordinator image a2aafazuredefaba.azurecr.io/af-coordinator:20261106T161604Z
 both apps 0.25 vCPU, memory 0.5Gi, ephemeral storage 1Gi, replicas 1..1
+host Model name: 13th Gen Intel(R) Core(TM) i7-1360P
+host Linux 7.2.15+deb14-amd64

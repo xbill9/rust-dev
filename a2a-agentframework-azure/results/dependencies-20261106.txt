@@ -10,3 +10,6 @@ aiohttp dist-info dirs installed: 0
 
 # azure.identity.aio without aiohttp (python:3.14-slim, requirements minus aiohttp)
 ImportError: aiohttp package is not installed
+
+# shared pyenv Python (laptop)
+aiohttp 3.14.3
