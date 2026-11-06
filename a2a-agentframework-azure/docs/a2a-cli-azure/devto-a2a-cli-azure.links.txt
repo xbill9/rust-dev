@@ -1,8 +1,8 @@
 # Destination URLs for the LinkedIn, Slack and Google Chat posts. PENDING fails the
 # run on purpose: a post whose links do not resolve is worse than no post.
 # Azure article: personal dev.to account (neither gde nor aws-builders), no Builder Center.
-# dev.to draft 4989681 created 2026-11-06.
-devto      = PENDING
+# dev.to article 4989681 published 2026-11-06.
+devto      = https://dev.to/xbill/the-a2a-cli-on-azure-one-client-for-container-apps-agent-framework-and-localhost-4b6k
 devto-gde  = SKIP
 devto-aws  = SKIP
 builder    = SKIP

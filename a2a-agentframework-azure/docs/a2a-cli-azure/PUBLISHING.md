@@ -2,7 +2,7 @@
 
 | Destination | State |
 |---|---|
-| dev.to (personal account, no org: the Azure subject fits neither `gde` nor `aws-builders`) | **draft** 2026-11-06, id `4989681`: https://dev.to/xbill/the-a2a-cli-on-azure-one-client-for-container-apps-agent-framework-and-localhost-3aj5-temp-slug-4358735 |
+| dev.to (personal account, no org: the Azure subject fits neither `gde` nor `aws-builders`) | **published** 2026-11-06, id `4989681`: https://dev.to/xbill/the-a2a-cli-on-azure-one-client-for-container-apps-agent-framework-and-localhost-4b6k |
 | Medium | not started |
 | Substack | not started |
 | AWS Builder Center | SKIP (Azure article) |
